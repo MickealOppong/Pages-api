@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns(
                         "http://localhost:[*]",
                         "https://pages-production-6b7d.up.railway.app",
-                        "https://tender-cat-production-ecef.up.railway.app"
+                        "https://pages-api-production-88b2.up.railway.app"
                 );
     }
 
