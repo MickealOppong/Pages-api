@@ -14,13 +14,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/wss","/ws")
+        registry.addEndpoint("/ws")
                 // Safely allows your local server, your current frontend, and any potential backup subdomains
-                .setAllowedOriginPatterns(
-                        "http://localhost:[*]",
-                        "https://pages-production-6b7d.up.railway.app",
-                        "https://pages-api-production-88b2.up.railway.app"
-                );
+                .setAllowedOriginPatterns("http://localhost:5173");
     }
 
 
@@ -33,9 +29,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic");
     }
 
-    // Add this method to ensure Spring Security context passes seamlessly to WebSocket controllers
-    @Override
-    public boolean configureMessageConverters(java.util.List<org.springframework.messaging.converter.MessageConverter> messageConverters) {
-        return true;
-    }
+
 }

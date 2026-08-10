@@ -1,26 +1,20 @@
 package com.pages.controller;
 
-import com.pages.dto.DeleteResponseDto;
-import com.pages.dto.FilterDto;
-import com.pages.dto.PostDto;
-import com.pages.dto.ResponseDto;
-import com.pages.enums.NotificationType;
-import com.pages.interfaces.RequiresPublicPost;
-import com.pages.model.Post;
+import com.pages.dto.*;
+import com.pages.exception.EntityNotFoundException;
+import com.pages.model.AppUser;
 import com.pages.service.Match_requestService;
-import com.pages.service.NotificationService;
 import com.pages.service.PostService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.parser.MediaType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -81,9 +75,24 @@ public class TransactionController {
      }
     }
 
-    @PostMapping("/broadcast")
-    public ResponseDto<Object> addPost(String activity, String content, String visibility,MultipartFile image, String mediaOrientation,String userId){
-      return postService.save(activity,content,visibility,image,mediaOrientation,Long.parseLong(userId));
+    @PostMapping(value= "/broadcast",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseDto<Object> addPost( @Valid   @ModelAttribute CreateMomentDto createMomentDto,
+                                         @RequestPart MultipartFile media){
+        if (media == null || media.isEmpty()) {
+            throw new IllegalArgumentException("Image is required");
+        }
+
+        if (media.getSize() > 30 * 1024 * 1024) {
+            throw new IllegalArgumentException("Image must be smaller than 30MB");
+        }
+
+        String contentType = media.getContentType();
+
+        if (!List.of("image/jpeg", "image/png", "image/webp","video/mp4","/video/webm")
+                .contains(contentType)) {
+            throw new IllegalArgumentException("Invalid image type");
+        }
+      return postService.save(createMomentDto,media);
     }
 
     @PatchMapping("/accept-request")

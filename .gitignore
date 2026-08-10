@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 # Ignore the specific private key file safely
-/src/main/resources/certs
+/src/main/resources/certs/private.pem

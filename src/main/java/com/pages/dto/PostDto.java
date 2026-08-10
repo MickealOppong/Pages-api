@@ -3,6 +3,8 @@ package com.pages.dto;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +20,17 @@ public class PostDto{
     private Long postId;
     private Long userId;
     private String firstName;
+
+    @NotNull(message = "Please provide a description with max 250 words")
+    @NotBlank(message = "Please provide a description with max 250 words")
     private String content;
+
     private String status;
     private Long likesCount;
     private Integer viewsCount;
+
+    @NotNull(message = "Field cannot be null")
+    @NotBlank(message = "Field cannot be empty")
     private String visibility;
     private LocalDate date_of_birth;
     private String type;

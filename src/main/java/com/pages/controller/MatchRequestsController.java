@@ -52,8 +52,8 @@ public class MatchRequestsController {
     }
 
     @DeleteMapping("/remove/{matchId}")
-    public void rejectRequest(Long matchId){
-      matchRequestsService.deleteLike(matchId);
+    public ResponseDto<Object> rejectRequest(Long matchId){
+      return matchRequestsService.deleteLike(matchId);
     }
 
 

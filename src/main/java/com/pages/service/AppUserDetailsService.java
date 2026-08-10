@@ -40,7 +40,7 @@ public class AppUserDetailsService implements UserDetailsService {
     private final Match_requestRepo matchRequestRepo;
     private final PasswordEncoder passwordEncoder;
     private final ChatMessageRepo chatMessageRepo;
-    private final NotificationService notificationService;
+
 
     @Autowired
     private NotificationRepo notificationRepo;
@@ -49,7 +49,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
 
     public AppUserDetailsService(AppUserRepo appUserRepo, AppUserRoleRepo appUserRoleRepo, MediaService mediaService,
-                                 PostRepo postRepo, Match_requestRepo matchRequestRepo, @Lazy PasswordEncoder  passwordEncoder, ChatMessageRepo chatMessageRepo, NotificationService notificationService){
+                                 PostRepo postRepo, Match_requestRepo matchRequestRepo, @Lazy PasswordEncoder  passwordEncoder, ChatMessageRepo chatMessageRepo){
         this.appUserRepo = appUserRepo;
         this.appUserRoleRepo = appUserRoleRepo;
         this.mediaService = mediaService;
@@ -58,7 +58,6 @@ public class AppUserDetailsService implements UserDetailsService {
         this.matchRequestRepo = matchRequestRepo;
         this.passwordEncoder = passwordEncoder;
         this.chatMessageRepo = chatMessageRepo;
-        this.notificationService = notificationService;
     }
 
 

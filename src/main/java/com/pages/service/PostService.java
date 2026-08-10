@@ -1,18 +1,12 @@
 package com.pages.service;
 
-import com.pages.dto.DeleteResponseDto;
-import com.pages.dto.MediaDto;
-import com.pages.dto.PostDto;
-import com.pages.dto.ResponseDto;
-import com.pages.enums.Visibility;
+import com.pages.dto.*;
+import com.pages.exception.EntityNotFoundException;
 import com.pages.model.AppUser;
 import com.pages.model.Post;
 import com.pages.repository.PostRepo;
 import com.pages.specs.PostSpecs;
 import com.pages.util.Media;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,13 +14,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -44,21 +39,22 @@ public class PostService {
         this.appUserDetailsService = appUserDetailsService;
     }
 
-    public ResponseDto<Object> save(String activity, String content, String visibility,MultipartFile media,String mediaOrientation, Long userId){
+    public ResponseDto<Object> save(CreateMomentDto createMomentDto,MultipartFile media){
 
         try {
-            boolean hasPublicPost = postRepo.existsByAppUserIdAndVisibility(userId,Visibility.PUBLIC.name());
 
-            AppUser user =  appUserDetailsService.getAppUserById(userId);
-            Media savedImage = mediaService.saveImage(media,mediaOrientation);
+            AppUser user = appUserDetailsService.getAppUserById(createMomentDto.getUserId());
+
+            Long userId = user.getId();
+            Media savedImage = mediaService.saveImage(media, createMomentDto.getMediaOrientation());
             appUserDetailsService.updateLastActive(userId);
 
             Post post = Post.builder()
                     .appUser(user)
-                    .type(activity)
+                    .type(createMomentDto.getActivity())
                     .viewsCount(0)
-                    .visibility(visibility)
-                    .content(content)
+                    .visibility(createMomentDto.getVisibility())
+                    .content(createMomentDto.getContent())
                     .media(savedImage)
                     .build();
              postRepo.save( post);

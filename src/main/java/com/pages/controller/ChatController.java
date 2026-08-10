@@ -49,9 +49,15 @@ public class ChatController {
     public void processMessage( @DestinationVariable Long matchId, @Payload ChatMessageDto message) {
         // Save to Database
         ChatMessage savedMessage = chatMessageService.saveMessage(message);
+        ChatMessageDto messageDto = ChatMessageDto.builder()
+                .id(savedMessage.getId())
+                .message(savedMessage.getMessage())
+                .senderId(savedMessage.getSender().getId())
+                .receiverId(savedMessage.getReceiver().getId())
+                .build();
 
         // Broadcast live to subscribers listening at: /topic/messages/{matchId}
-        messagingTemplate.convertAndSend( "/topic/messages/"+matchId,savedMessage);
+        messagingTemplate.convertAndSend( "/topic/messages/"+matchId,messageDto);
 
     }
 }

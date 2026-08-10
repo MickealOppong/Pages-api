@@ -1,5 +1,7 @@
 package com.pages.model;
 
+import com.fasterxml.jackson.annotation.JsonDeserializeAs;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pages.util.LogEntity;
 import com.pages.util.Media;
 import com.pages.util.Notification;
@@ -78,8 +80,9 @@ public class AppUser extends LogEntity implements UserDetails {
     private Instant lastActive;
 
     //User role
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<AppUserRole> userRole ;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonDeserializeAs
+    private List<AppUserRole> userRole =new ArrayList<>();
 
 
     //profile picture

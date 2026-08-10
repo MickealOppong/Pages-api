@@ -271,7 +271,9 @@ public class Match_requestService {
     }
 
     @Transactional
-    public void deleteLike(Long matchId){
+    public ResponseDto<Object> deleteLike(Long matchId){
+
+        try {
             Match_request match =matchRequestsRepo.findById(matchId)
                     .orElseThrow(()->new EntityNotFoundException("No valid match found for "+matchId));
 
@@ -283,9 +285,18 @@ public class Match_requestService {
 
             // 3 Delete the match request link itself
             matchRequestsRepo.delete(match);
-
-
-
+            return ResponseDto.builder()
+                    .message("Unmatched")
+                    .data(true)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        }catch (Exception e){
+            return ResponseDto.builder()
+                    .message(e.getMessage())
+                    .data(false)
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .build();
+        }
     }
 
     // MatchRequestService.java
