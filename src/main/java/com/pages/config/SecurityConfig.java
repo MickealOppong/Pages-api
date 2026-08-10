@@ -81,7 +81,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of( "http://localhost:5173","https://pages-production-6b7d.up.railway.app" ));
+        config.setAllowedOrigins(List.of( "http://localhost:5173","https://pages-api-production-48f8.up.railway.app" ));
         config.setAllowedMethods(Arrays.asList("POST","GET","DELETE","PUT","PATCH","OPTIONS","HEADER","HEAD"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
