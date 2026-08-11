@@ -20,9 +20,7 @@ import java.sql.Ref;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -80,9 +78,13 @@ public class AppUser extends LogEntity implements UserDetails {
     private Instant lastActive;
 
     //User role
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonDeserializeAs
-    private List<AppUserRole> userRole =new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "app_user_roles", // The name of your join table
+            joinColumns = @JoinColumn(name = "user_id"), // Foreign key for AppUser
+            inverseJoinColumns = @JoinColumn(name = "role_id") // Foreign key for AppUserRole
+    )
+    private Set<AppUserRole> userRole = new HashSet<>();
 
 
     //profile picture
@@ -115,7 +117,7 @@ public class AppUser extends LogEntity implements UserDetails {
     }
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,List<AppUserRole> role,String location){
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,Set<AppUserRole> role,String location){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

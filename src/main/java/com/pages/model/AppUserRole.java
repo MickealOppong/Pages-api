@@ -10,7 +10,6 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@Table
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUserRole extends LogEntity {

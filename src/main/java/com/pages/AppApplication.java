@@ -1,6 +1,8 @@
 package com.pages;
 
 import com.pages.impl.MediaUtilImpl;
+import com.pages.model.AppUserRole;
+import com.pages.repository.AppUserRoleRepo;
 import com.pages.util.RsaKeyProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class AppApplication {
 
 	private MediaUtilImpl mediaUtilImpl;
-
+	private AppUserRoleRepo appUserRoleRepo;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AppApplication.class, args);
@@ -27,6 +29,9 @@ public class AppApplication {
 	public CommandLineRunner init(){
 		return args -> {
 			mediaUtilImpl.init();
+
+			AppUserRole USER = new AppUserRole("ROLE_USER");
+			appUserRoleRepo.save(USER);
 		};
 	}
 }

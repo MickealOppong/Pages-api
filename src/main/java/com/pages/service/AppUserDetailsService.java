@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -155,9 +156,9 @@ public class AppUserDetailsService implements UserDetailsService {
 
     public void add(AppUser appUser){
 
-        AppUserRole userRole = new AppUserRole("ROLE_USER");
-        appUserRoleRepo.save(userRole);
-        appUser.setUserRole(List.of(userRole));
+        AppUserRole userRole = appUserRoleRepo.findByRole("ROLE_USER").orElseThrow(()->new EntityNotFoundException("Role does not exist"));
+        //set user Role
+        appUser.setUserRole(Set.of(userRole));
         appUserRepo.save(appUser);
     }
 
