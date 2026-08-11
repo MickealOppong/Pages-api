@@ -30,8 +30,10 @@ public class AppApplication {
 		return args -> {
 			mediaUtilImpl.init();
 
-			AppUserRole USER = new AppUserRole("ROLE_USER");
-			appUserRoleRepo.save(USER);
+			if(!appUserRoleRepo.existsByRole("ROLE_USER")){
+				AppUserRole USER = new AppUserRole("ROLE_USER");
+				appUserRoleRepo.save(USER);
+			}
 		};
 	}
 }
