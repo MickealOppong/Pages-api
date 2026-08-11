@@ -27,15 +27,17 @@ public interface Match_requestRepo extends JpaRepository<Match_request,Long> {
     void deleteUserMatchHistory(Long userId);
 
 
-    Set<Match_request> findAllByReceiverId_IdAndRequestStatus(Long receiverId, String requestStatus);
-    List<Match_request> findAllByReceiverIdOrSenderId(Long receiverId,Long senderId);
-
-
-    List<Match_request> findByReceiverId_IdAndRequestStatus(Long id, String requestStatus);
 
     // Checked and fully compliant with Spring Data parsing mechanics
-    List<Match_request> findAllByReceiverId_IdAndRequestStatusOrSenderId_IdAndRequestStatus(
-            Long receiverId, String status1, Long senderId, String status2
+    @Query("""
+    SELECT m
+    FROM Match_request m
+    WHERE (m.receiverId.id = :userId AND m.requestStatus = :status)
+       OR (m.senderId.id = :userId AND m.requestStatus = :status)
+""")
+    List<Match_request> findUserRequests(
+            @Param("userId") Long userId,
+            @Param("status") String status
     );
 
     @Query("SELECT l.receiverId.id FROM Match_request l WHERE l.senderId.id = :senderId AND l.requestStatus='PENDING'")
@@ -53,6 +55,15 @@ public interface Match_requestRepo extends JpaRepository<Match_request,Long> {
             Long sender1, Long receiver1,String requestStatus1, Long receiver2,Long sender2,String requestStatus2
     );
 
-    Optional<Match_request> findBySenderIdIdAndReceiverIdIdOrReceiverIdIdAndSenderIdId(Long senderId,Long receiver1Id,Long receiver2Id,Long sender2Id);
+    @Query("""
+    SELECT m
+    FROM Match_request m
+    WHERE (m.senderId.id = :user1Id AND m.receiverId.id = :user2Id)
+       OR (m.senderId.id = :user2Id AND m.receiverId.id = :user1Id)
+""")
+    Optional<Match_request> findBetweenUsers(
+            @Param("user1Id") Long user1Id,
+            @Param("user2Id") Long user2Id
+    );
 
 }

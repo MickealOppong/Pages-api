@@ -127,7 +127,7 @@ public class Match_requestService {
     public List<MatchRequestDto> getUserLikes(Long id){
 
 
-      return matchRequestsRepo.findByReceiverId_IdAndRequestStatus(id,Request_Status.PENDING.name()).stream().map(mr->{
+      return matchRequestsRepo.findUserRequests(id,Request_Status.PENDING.name()).stream().map(mr->{
             AppUser targetUser=mr.getSenderId();
 
                     String picture = Optional.ofNullable(targetUser)
@@ -214,9 +214,7 @@ public class Match_requestService {
     }
 
     public List<MatchRequestDto> getMyMatchesDashboard(Long currentUserId) {
-        List<Match_request> rawMatches = matchRequestsRepo.findAllByReceiverId_IdAndRequestStatusOrSenderId_IdAndRequestStatus(
-                        currentUserId,Request_Status.ACCEPTED.name(),
-                currentUserId, Request_Status.ACCEPTED.name());
+        List<Match_request> rawMatches = matchRequestsRepo.findUserRequests(currentUserId,Request_Status.ACCEPTED.name());
 
         // Map each row by dynamically selecting the opposite user
         return rawMatches.stream().map(matchRequests -> {
@@ -319,7 +317,7 @@ public class Match_requestService {
 
     public boolean acceptRequest(Long sender,Long receiver) {
 
-        Match_request request = matchRequestsRepo.findBySenderIdIdAndReceiverIdIdOrReceiverIdIdAndSenderIdId(sender,receiver,sender,receiver)
+        Match_request request = matchRequestsRepo.findBetweenUsers(sender,receiver)
                 .orElseThrow(() -> new EntityNotFoundException("Request not found"));
 
         request.setRequestStatus(Request_Status.ACCEPTED.name());
@@ -338,12 +336,12 @@ public class Match_requestService {
                 ,receiver,sender,Request_Status.PENDING.name());
     }
 
-    public Set<Match_request> getAllRequestsByReceiver(Long receiver,String status){
-      return  matchRequestsRepo.findAllByReceiverId_IdAndRequestStatus(receiver,status.equals("pending")?Request_Status.PENDING.name():Request_Status.ACCEPTED.name());
+    public List<Match_request> getAllRequestsByReceiver(Long receiver,String status){
+      return  matchRequestsRepo.findUserRequests(receiver,status.equals("pending")?Request_Status.PENDING.name():Request_Status.ACCEPTED.name());
     }
 
     public List<Match_request> activeMatches(Long currentUserId){
         return matchRequestsRepo
-                .findAllByReceiverId_IdAndRequestStatusOrSenderId_IdAndRequestStatus(currentUserId, Request_Status.ACCEPTED.name(), currentUserId, Request_Status.ACCEPTED.name());
+                .findUserRequests(currentUserId, Request_Status.ACCEPTED.name());
     }
 }
