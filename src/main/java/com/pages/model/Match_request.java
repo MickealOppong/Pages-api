@@ -8,7 +8,10 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(
+        callSuper = false,
+        onlyExplicitlyIncluded = true
+)
 @Setter
 @Getter
 @AllArgsConstructor
@@ -24,11 +27,11 @@ public class Match_request extends LogEntity {
     @Id @GeneratedValue
     private Long Id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "senderId")
     private AppUser senderId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "receiverId")
     private AppUser receiverId;
 
@@ -36,7 +39,5 @@ public class Match_request extends LogEntity {
 
     private String requestStatus;
 
-    @OneToMany(mappedBy = "targetId",cascade = CascadeType.ALL)
-    private List<Notification> notificationList= new ArrayList<>();
 
 }

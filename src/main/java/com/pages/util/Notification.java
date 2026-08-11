@@ -27,13 +27,12 @@ public class Notification extends LogEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // The user who receives the notification
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id", nullable = false)
     private AppUser recipient;
 
-    // The user who triggered the notification (e.g., liked, matched)
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trigger_user_id")
     private AppUser triggerUser;
 

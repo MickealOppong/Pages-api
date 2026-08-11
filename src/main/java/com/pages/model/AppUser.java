@@ -22,7 +22,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(
+        callSuper = false,
+        onlyExplicitlyIncluded = true
+)
 @Entity
 @Table
 @Getter

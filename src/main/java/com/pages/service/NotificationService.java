@@ -7,6 +7,7 @@ import com.pages.model.AppUser;
 import com.pages.repository.Match_requestRepo;
 import com.pages.repository.NotificationRepo;
 import com.pages.util.Notification;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +19,16 @@ import java.util.stream.Collectors;
 
 
 
+@Transactional
 @Slf4j
 @Service
 public class NotificationService {
 
     private final NotificationRepo notificationRepo;
-    private final Match_requestRepo matchRequestRepo;
 
-    public NotificationService(NotificationRepo notificationRepo, Match_requestRepo matchRequestRepo) {
+
+    public NotificationService(NotificationRepo notificationRepo ){
         this.notificationRepo = notificationRepo;
-        this.matchRequestRepo = matchRequestRepo;
     }
 
     // Send a notification from anywhere in the app

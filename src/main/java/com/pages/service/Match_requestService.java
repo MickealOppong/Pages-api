@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Transactional
 @Slf4j
 @Service
 public class Match_requestService {
@@ -157,6 +158,7 @@ public class Match_requestService {
                .collect(Collectors.toList());
     }
 
+
     public MatchRequestDto getMatchById(Long id,Long currentUserId){
 
 
@@ -213,6 +215,8 @@ public class Match_requestService {
         return matchRequestsRepo.findById(matchId).orElse(null);
     }
 
+
+
     public List<MatchRequestDto> getMyMatchesDashboard(Long currentUserId) {
         List<Match_request> rawMatches = matchRequestsRepo.findUserRequests(currentUserId,Request_Status.ACCEPTED.name());
 
@@ -268,7 +272,7 @@ public class Match_requestService {
         }).collect(Collectors.toList());
     }
 
-    @Transactional
+
     public ResponseDto<Object> deleteLike(Long matchId){
 
         try {
