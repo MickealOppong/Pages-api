@@ -127,7 +127,7 @@ public class Match_requestService {
     public List<MatchRequestDto> getUserLikes(Long id){
 
 
-      return matchRequestsRepo.findByReceiverIdIdAndRequestStatus(id,Request_Status.PENDING.name()).stream().map(mr->{
+      return matchRequestsRepo.findByReceiverId_IdAndRequestStatus(id,Request_Status.PENDING.name()).stream().map(mr->{
             AppUser targetUser=mr.getSenderId();
 
                     String picture = Optional.ofNullable(targetUser)
@@ -214,7 +214,7 @@ public class Match_requestService {
     }
 
     public List<MatchRequestDto> getMyMatchesDashboard(Long currentUserId) {
-        List<Match_request> rawMatches = matchRequestsRepo.findAllByReceiverIdIdAndRequestStatusOrSenderIdIdAndRequestStatus(
+        List<Match_request> rawMatches = matchRequestsRepo.findAllByReceiverId_IdAndRequestStatusOrSenderId_IdAndRequestStatus(
                         currentUserId,Request_Status.ACCEPTED.name(),
                 currentUserId, Request_Status.ACCEPTED.name());
 
@@ -339,11 +339,11 @@ public class Match_requestService {
     }
 
     public Set<Match_request> getAllRequestsByReceiver(Long receiver,String status){
-      return  matchRequestsRepo.findAllByReceiverIdIdAndRequestStatus(receiver,status.equals("pending")?Request_Status.PENDING.name():Request_Status.ACCEPTED.name());
+      return  matchRequestsRepo.findAllByReceiverId_IdAndRequestStatus(receiver,status.equals("pending")?Request_Status.PENDING.name():Request_Status.ACCEPTED.name());
     }
 
     public List<Match_request> activeMatches(Long currentUserId){
         return matchRequestsRepo
-                .findAllByReceiverIdIdAndRequestStatusOrSenderIdIdAndRequestStatus(currentUserId, Request_Status.ACCEPTED.name(), currentUserId, Request_Status.ACCEPTED.name());
+                .findAllByReceiverId_IdAndRequestStatusOrSenderId_IdAndRequestStatus(currentUserId, Request_Status.ACCEPTED.name(), currentUserId, Request_Status.ACCEPTED.name());
     }
 }

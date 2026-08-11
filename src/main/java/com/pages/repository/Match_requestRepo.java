@@ -26,17 +26,15 @@ public interface Match_requestRepo extends JpaRepository<Match_request,Long> {
     @Query(value = "DELETE FROM Match_request m WHERE m.senderId.id = :userId OR m.receiverId.id = :userId")
     void deleteUserMatchHistory(Long userId);
 
-    List<Match_request> findAllBySenderId(Long senderId);
 
-    Set<Match_request> findAllByReceiverIdIdAndRequestStatus(Long receiverId, String requestStatus);
+    Set<Match_request> findAllByReceiverId_IdAndRequestStatus(Long receiverId, String requestStatus);
     List<Match_request> findAllByReceiverIdOrSenderId(Long receiverId,Long senderId);
 
-    Set<Match_request> findAllByReceiverIdAndRequestStatus(AppUser receiverId,String requestStatus);
 
-   List<Match_request> findByReceiverIdIdAndRequestStatus(Long receiverId,String requestStatus);
+    List<Match_request> findByReceiverId_IdAndRequestStatus(Long id, String requestStatus);
 
     // Checked and fully compliant with Spring Data parsing mechanics
-    List<Match_request> findAllByReceiverIdIdAndRequestStatusOrSenderIdIdAndRequestStatus(
+    List<Match_request> findAllByReceiverId_IdAndRequestStatusOrSenderId_IdAndRequestStatus(
             Long receiverId, String status1, Long senderId, String status2
     );
 
