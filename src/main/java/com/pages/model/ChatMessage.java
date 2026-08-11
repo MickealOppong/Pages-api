@@ -23,11 +23,11 @@ public class ChatMessage extends LogEntity {
     // This links directly to the primary key ID of your match_requests table
     private Long matchId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "senderId", nullable = false)
     private AppUser sender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiverId", nullable = false)
     private AppUser receiver;
 

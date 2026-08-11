@@ -24,11 +24,11 @@ public class Match_request extends LogEntity {
     @Id @GeneratedValue
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "senderId")
     private AppUser senderId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiverId")
     private AppUser receiverId;
 
