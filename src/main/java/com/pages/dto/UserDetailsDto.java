@@ -40,6 +40,6 @@ public class UserDetailsDto {
     private MultipartFile media;
     private String profileImage;
     private Boolean hasMatchRequest;
-    private boolean acceptedRules;
+    private Boolean acceptedRules;
     private List<PostDto> postDtoList;
 }
