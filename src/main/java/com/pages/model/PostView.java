@@ -3,6 +3,8 @@ package com.pages.model;
 import com.pages.util.LogEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -17,13 +19,13 @@ public class PostView extends LogEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
     // Renamed appUser field to viewer to explicitly state its role in analytics
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "viewer_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "viewer_id",nullable = false)
     private AppUser viewer;
 }
 

@@ -24,5 +24,6 @@ public class MatchRequestDto {
     private Instant requestDate;
     private boolean hasReadMessage;
     private String activity;
+    private boolean hasMatchRequest;
 
 }

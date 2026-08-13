@@ -32,13 +32,18 @@ public interface Match_requestRepo extends JpaRepository<Match_request,Long> {
     @Query("""
     SELECT m
     FROM Match_request m
-    WHERE (m.receiverId.id = :userId AND m.requestStatus = :status)
-       OR (m.senderId.id = :userId AND m.requestStatus = :status)
+    WHERE (m.receiverId.id = :userId AND m.requestStatus ='PENDING')
 """)
-    List<Match_request> findUserRequests(
-            @Param("userId") Long userId,
-            @Param("status") String status
-    );
+    List<Match_request> findUserLikeRequests(@Param("userId") Long userId);
+
+    // Checked and fully compliant with Spring Data parsing mechanics
+    @Query("""
+    SELECT m
+    FROM Match_request m
+    WHERE (m.receiverId.id = :userId AND m.requestStatus = 'ACCEPTED')
+       OR (m.senderId.id = :userId AND m.requestStatus = 'ACCEPTED')
+""")
+    List<Match_request> findUserMatchRequests(@Param("userId") Long userId);
 
     @Query("SELECT l.receiverId.id FROM Match_request l WHERE l.senderId.id = :senderId AND l.requestStatus='PENDING'")
     List<Match_request> findLikedUserIdsBySenderId(AppUser senderId);
@@ -55,6 +60,12 @@ public interface Match_requestRepo extends JpaRepository<Match_request,Long> {
             Long sender1, Long receiver1,String requestStatus1, Long receiver2,Long sender2,String requestStatus2
     );
 
+    @Query("SELECT COUNT(m) > 0 FROM Match_request m " +
+            "WHERE (m.senderId.id = :userId OR m.receiverId.id = :userId) " +
+            "AND m.requestStatus =:status")
+    boolean existsMatchRequest(@Param("userId") Long userId,@Param("status") String status);
+
+
     @Query("""
     SELECT m
     FROM Match_request m
@@ -65,5 +76,7 @@ public interface Match_requestRepo extends JpaRepository<Match_request,Long> {
             @Param("user1Id") Long user1Id,
             @Param("user2Id") Long user2Id
     );
+
+
 
 }

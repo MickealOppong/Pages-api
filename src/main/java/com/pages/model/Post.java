@@ -26,12 +26,12 @@ public class Post extends LogEntity implements Serializable {
     private String visibility;
     private String type;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "userId")
     private AppUser appUser;
 
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     private Media media;
 
     @Column(name = "views_count", nullable = false)

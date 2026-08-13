@@ -39,5 +39,6 @@ public class UserDetailsDto {
     private String aboutThem;
     private MultipartFile media;
     private String profileImage;
+    private Boolean hasMatchRequest;
     private List<PostDto> postDtoList;
 }

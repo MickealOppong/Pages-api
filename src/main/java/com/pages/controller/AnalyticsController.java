@@ -27,8 +27,6 @@ public class AnalyticsController {
     ) {
         // Mock method placeholder: Extract your internal AppUser Long database ID from your UserDetails service implementation
         Long viewerId = getUserIdFromPrincipal(jwt);
-
-        log.info("{}",viewerId);
         // Dispatches the background tracking sequence instantly
         analyticsService.recordPostView(postId, viewerId);
 

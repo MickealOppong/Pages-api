@@ -128,7 +128,7 @@ public class Match_requestService {
     public List<MatchRequestDto> getUserLikes(Long id){
 
 
-      return matchRequestsRepo.findUserRequests(id,Request_Status.PENDING.name()).stream().map(mr->{
+      return matchRequestsRepo.findUserLikeRequests(id).stream().map(mr->{
             AppUser targetUser=mr.getSenderId();
 
                     String picture = Optional.ofNullable(targetUser)
@@ -218,7 +218,7 @@ public class Match_requestService {
 
 
     public List<MatchRequestDto> getMyMatchesDashboard(Long currentUserId) {
-        List<Match_request> rawMatches = matchRequestsRepo.findUserRequests(currentUserId,Request_Status.ACCEPTED.name());
+        List<Match_request> rawMatches = matchRequestsRepo.findUserMatchRequests(currentUserId);
 
         // Map each row by dynamically selecting the opposite user
         return rawMatches.stream().map(matchRequests -> {
@@ -331,21 +331,4 @@ public class Match_requestService {
 
     }
 
-    public boolean existsMatchRequest(AppUser sender,AppUser receiver){
-       return matchRequestsRepo.existsBySenderIdAndReceiverIdOrSenderIdAndReceiverId(sender,receiver,receiver,sender);
-    }
-
-    public boolean existsMatchRequestAndStatus(Long sender,Long receiver){
-        return matchRequestsRepo.existsBySenderIdIdAndReceiverIdIdAndRequestStatusOrSenderIdIdAndReceiverIdIdAndRequestStatus(sender,receiver,Request_Status.PENDING.name()
-                ,receiver,sender,Request_Status.PENDING.name());
-    }
-
-    public List<Match_request> getAllRequestsByReceiver(Long receiver,String status){
-      return  matchRequestsRepo.findUserRequests(receiver,status.equals("pending")?Request_Status.PENDING.name():Request_Status.ACCEPTED.name());
-    }
-
-    public List<Match_request> activeMatches(Long currentUserId){
-        return matchRequestsRepo
-                .findUserRequests(currentUserId, Request_Status.ACCEPTED.name());
-    }
 }

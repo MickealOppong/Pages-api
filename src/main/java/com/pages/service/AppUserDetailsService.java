@@ -41,6 +41,7 @@ public class AppUserDetailsService implements UserDetailsService {
     private final Match_requestRepo matchRequestRepo;
     private final PasswordEncoder passwordEncoder;
     private final ChatMessageRepo chatMessageRepo;
+    private final PostViewRepo postViewRepo;
 
 
     @Autowired
@@ -50,7 +51,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
 
     public AppUserDetailsService(AppUserRepo appUserRepo, AppUserRoleRepo appUserRoleRepo, MediaService mediaService,
-                                 PostRepo postRepo, Match_requestRepo matchRequestRepo, @Lazy PasswordEncoder  passwordEncoder, ChatMessageRepo chatMessageRepo){
+                                 PostRepo postRepo, Match_requestRepo matchRequestRepo, @Lazy PasswordEncoder  passwordEncoder, ChatMessageRepo chatMessageRepo, PostViewRepo postViewRepo){
         this.appUserRepo = appUserRepo;
         this.appUserRoleRepo = appUserRoleRepo;
         this.mediaService = mediaService;
@@ -59,6 +60,7 @@ public class AppUserDetailsService implements UserDetailsService {
         this.matchRequestRepo = matchRequestRepo;
         this.passwordEncoder = passwordEncoder;
         this.chatMessageRepo = chatMessageRepo;
+        this.postViewRepo = postViewRepo;
     }
 
 
@@ -98,12 +100,16 @@ public class AppUserDetailsService implements UserDetailsService {
         matchRequestRepo.deleteUserMatchHistory(userId);
 
 
+        //post view delete
+        postViewRepo.deleteByPostOwnerId(userId);
+        postViewRepo.deleteByViewerId(userId);
+
         //delete post
         postRepo.deleteAllPostByAppUserId(userId);
 
 
 
-        appUserRepo.deleteById(userId);
+        appUserRepo.delete(user);
 
 
         try {
@@ -195,8 +201,9 @@ public class AppUserDetailsService implements UserDetailsService {
 
               //check whether there is a match between userid and requestor userId
 
-          boolean match= matchRequestRepo.existsBySenderIdIdAndReceiverIdIdAndRequestStatusOrSenderIdIdAndReceiverIdIdAndRequestStatus(userId,requestUserId,Request_Status.ACCEPTED.name()
-                  ,requestUserId,userId,Request_Status.ACCEPTED.name());
+          boolean match= matchRequestRepo.existsMatchRequest(userId,Request_Status.ACCEPTED.name());
+
+          boolean matchRequest= matchRequestRepo.existsMatchRequest(userId, Request_Status.PENDING.name());
 
 
           for(Post post:  postRepo.findAllByAppUserId(userId)){
@@ -236,6 +243,7 @@ public class AppUserDetailsService implements UserDetailsService {
                       .drinking(user.getDrinking())
                       .smoking(user.getSmoking())
                       .education(user.getEducation())
+                      .hasMatchRequest(matchRequest)
                       .height(user.getHeight())
                       .gender(user.getGender())
                       .preference(user.getPreference())

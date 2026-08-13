@@ -45,7 +45,6 @@ public class MatchRequestsController {
         return matchRequestsService.getMatchById(matchId,currentUserId);
     }
 
-
     @GetMapping("/likes")
     public List<MatchRequestDto> MyLikes(Long userId){
         return matchRequestsService.getUserLikes(userId);
