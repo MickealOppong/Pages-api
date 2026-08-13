@@ -2,6 +2,7 @@ package com.pages.controller;
 
 import com.pages.dto.*;
 import com.pages.exception.EntityNotFoundException;
+import com.pages.interfaces.ValidMedia;
 import com.pages.model.AppUser;
 import com.pages.service.Match_requestService;
 import com.pages.service.PostService;
@@ -77,22 +78,8 @@ public class TransactionController {
 
     @PostMapping(value= "/broadcast",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseDto<Object> addPost( @Valid   @ModelAttribute CreateMomentDto createMomentDto,
-                                         @RequestPart MultipartFile media){
-        if (media == null || media.isEmpty()) {
-            throw new IllegalArgumentException("Image is required");
-        }
-
-        if (media.getSize() > 30 * 1024 * 1024) {
-            throw new IllegalArgumentException("Image must be smaller than 30MB");
-        }
-
-        String contentType = media.getContentType();
-
-        if (!List.of("image/jpeg", "image/png", "image/webp","video/mp4","/video/webm")
-                .contains(contentType)) {
-            throw new IllegalArgumentException("Invalid image type");
-        }
-      return postService.save(createMomentDto,media);
+                                         @RequestPart @ValidMedia MultipartFile media){
+      return postService.saveBroadcast(createMomentDto,media);
     }
 
     @PatchMapping("/accept-request")

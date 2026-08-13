@@ -409,7 +409,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
 
                    if(userDetailsDto.getMedia()!=null){
-                       Media media = mediaService.saveImage(userDetailsDto.getMedia());
+                       Media media = mediaService.saveMedia(userDetailsDto.getMedia());
                        appUser.setMedia(media);
                    }
                    if(userDetailsDto.getGender()!=null){

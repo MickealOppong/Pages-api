@@ -37,7 +37,7 @@ public class MediaService {
         return MediaUtil.loadAsResource(fileName);
     }
 
-    public Media saveImage(MultipartFile image,String orientation) {
+    public Media saveMedia(MultipartFile image,String orientation) {
         try{
             Media media = Media.builder()
                     .contentType(image.getContentType())
@@ -53,7 +53,7 @@ public class MediaService {
         }
     }
 
-    public Media saveImage(MultipartFile image) {
+    public Media saveMedia(MultipartFile image) {
         try{
             Media media = Media.builder()
                     .contentType(image.getContentType())

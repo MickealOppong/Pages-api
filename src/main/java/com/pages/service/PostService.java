@@ -2,11 +2,14 @@ package com.pages.service;
 
 import com.pages.dto.*;
 import com.pages.exception.EntityNotFoundException;
+import com.pages.interfaces.ValidMedia;
 import com.pages.model.AppUser;
 import com.pages.model.Post;
 import com.pages.repository.PostRepo;
 import com.pages.specs.PostSpecs;
 import com.pages.util.Media;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,12 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -39,15 +44,43 @@ public class PostService {
         this.appUserDetailsService = appUserDetailsService;
     }
 
-    public ResponseDto<Object> save(CreateMomentDto createMomentDto,MultipartFile media){
+    @Transactional
+    public ResponseDto<Object> saveBroadcast(CreateMomentDto createMomentDto, MultipartFile media) {
+
+        Media savedMedia = null;
 
         try {
+
+            if (media == null || media.isEmpty()) {
+                throw new IllegalArgumentException("Media is required");
+            }
+
+            if (media.getSize() > 30L * 1024 * 1024) {
+                throw new IllegalArgumentException("Media must be smaller than 30MB");
+            }
+
+            String contentType = media.getContentType();
+
+            Set<String> allowedTypes = Set.of(
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "video/mp4",
+                    "video/webm"
+            );
+
+            if (contentType == null ||
+                    !allowedTypes.contains(contentType.toLowerCase())) {
+
+                throw new IllegalArgumentException("Invalid media type");
+            }
 
             AppUser user = appUserDetailsService.getAppUserById(createMomentDto.getUserId());
 
             Long userId = user.getId();
-            Media savedImage = mediaService.saveImage(media, createMomentDto.getMediaOrientation());
-            appUserDetailsService.updateLastActive(userId);
+
+
+            savedMedia = mediaService.saveMedia(media, createMomentDto.getMediaOrientation());
 
             Post post = Post.builder()
                     .appUser(user)
@@ -55,15 +88,26 @@ public class PostService {
                     .viewsCount(0)
                     .visibility(createMomentDto.getVisibility())
                     .content(createMomentDto.getContent())
-                    .media(savedImage)
+                    .media(savedMedia)
                     .build();
-             postRepo.save( post);
+
+
+            postRepo.save(post);
+
+
+            appUserDetailsService.updateLastActive(userId);
+
+
             return ResponseDto.builder()
                     .data(true)
                     .message("Post created")
                     .httpStatus(HttpStatus.OK)
                     .build();
-        }catch (Exception e){
+
+
+        } catch (Exception e) {
+
+
             return ResponseDto.builder()
                     .data(null)
                     .message(e.getMessage())

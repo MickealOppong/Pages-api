@@ -115,7 +115,6 @@ public class AuthController {
                     .build();
 
         }catch (UsernameNotFoundException ex) {
-            log.info("{}",ex.getMessage());
             return ResponseDto.builder()
                     .data(null)
                     .message("Username does not exist.")
