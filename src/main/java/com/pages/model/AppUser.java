@@ -101,7 +101,7 @@ public class AppUser extends LogEntity implements UserDetails {
 
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String location,boolean isTermsChecked){
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String location,boolean isTermsChecked,boolean rulesAccepted){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -114,6 +114,7 @@ public class AppUser extends LogEntity implements UserDetails {
         this.isEnabled = true;
         this.isAccountNonLocked = true;
         this.isCredentialsNonExpired = true;
+        this.rulesAccepted = false;
         this.city = location;
         this.lastActive = Instant.now();
         this.isTermsChecked = isTermsChecked;
@@ -121,7 +122,7 @@ public class AppUser extends LogEntity implements UserDetails {
     }
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,Set<AppUserRole> role,String location){
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,Set<AppUserRole> role,String location,boolean rulesAccepted){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -131,6 +132,7 @@ public class AppUser extends LogEntity implements UserDetails {
         this.date_of_birth = date_of_birth;
         this.userRole = role;
         this.isAccountNonExpired =true;
+        this.rulesAccepted = false;
         this.isEnabled = true;
         this.isAccountNonLocked = true;
         this.isCredentialsNonExpired = true;
