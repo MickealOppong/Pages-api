@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.RollbackOn;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -246,6 +248,7 @@ public class AppUserDetailsService implements UserDetailsService {
                       .hasMatchRequest(matchRequest)
                       .height(user.getHeight())
                       .gender(user.getGender())
+                      .acceptedRules(user.isRulesAccepted())
                       .preference(user.getPreference())
                       .lookingFor(user.getLookingFor())
                       .postDtoList(postDtoList)
@@ -371,6 +374,7 @@ public class AppUserDetailsService implements UserDetailsService {
                         .userId(user.getId())
                         .firstName(user.getFirstName())
                         .lastName(user.getLastName())
+                        .acceptedRules(user.isRulesAccepted())
                         .profileImage(user.getMedia()!=null? mediaService.getImage(user.getMedia().getId()):null)
                         .build();
 
@@ -472,5 +476,23 @@ public class AppUserDetailsService implements UserDetailsService {
         }catch (Exception e){
            return false;
         }
+    }
+
+    @Transactional
+    public ResponseDto<Boolean> acceptRulesOnLogin(Jwt jwt){
+
+        String username = jwt.getSubject();
+
+        AppUser user = appUserRepo.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+
+        user.setRulesAccepted(true);
+        appUserRepo.save(user);
+
+        return ResponseDto.<Boolean>builder()
+                .httpStatus(HttpStatus.OK)
+                .message("Rules accepted successfully")
+                .data(true)
+                .build();
     }
 }

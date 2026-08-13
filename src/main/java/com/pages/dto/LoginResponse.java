@@ -17,6 +17,5 @@ public class LoginResponse {
     private String profileImage;
     private TokenDto tokenDto;
 
-
 }
 

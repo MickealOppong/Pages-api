@@ -4,9 +4,11 @@ import com.pages.dto.ChangePasswordDto;
 import com.pages.dto.ResponseDto;
 import com.pages.dto.UserDetailsDto;
 import com.pages.dto.UserRegistrationRequest;
+import com.pages.exception.EntityNotFoundException;
 import com.pages.model.AppUser;
 import com.pages.service.AppUserDetailsService;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -84,5 +87,12 @@ public class AppUserController {
     public ResponseDto<Object> deleteMyAccount(@AuthenticationPrincipal Jwt jwt) {
         return userDetailsService.deleteMyAccount(jwt);
     }
+
+        @PutMapping("/accept-rules")
+        public ResponseDto<Boolean> acceptRules(@AuthenticationPrincipal Jwt jwt) {
+         return userDetailsService.acceptRulesOnLogin(jwt);
+        }
+
+
 
 }

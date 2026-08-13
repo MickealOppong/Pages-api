@@ -75,6 +75,7 @@ public class AppUser extends LogEntity implements UserDetails {
     private boolean isCredentialsNonExpired;
 
     private boolean hideMyAge;
+    private boolean rulesAccepted;
 
 
 
