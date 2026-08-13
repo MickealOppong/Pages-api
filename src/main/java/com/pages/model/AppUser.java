@@ -101,7 +101,7 @@ public class AppUser extends LogEntity implements UserDetails {
 
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String location,boolean isTermsChecked,boolean rulesAccepted){
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String location,boolean isTermsChecked){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -122,7 +122,7 @@ public class AppUser extends LogEntity implements UserDetails {
     }
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,Set<AppUserRole> role,String location,boolean rulesAccepted){
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,Set<AppUserRole> role,String location){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
