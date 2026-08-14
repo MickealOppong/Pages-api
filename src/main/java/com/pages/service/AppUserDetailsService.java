@@ -404,7 +404,7 @@ public class AppUserDetailsService implements UserDetailsService {
        return appUserRepo.findById(userId).orElseThrow(()->new UsernameNotFoundException(userId+" not found"));
     }
 
-    public boolean updateUserDetails(UserDetailsDto userDetailsDto){
+    public boolean updateUserDetails(UserDetailsUpdateDto userDetailsDto){
 
         try{
            Optional<AppUser> retrievedUser= appUserRepo.findById(userDetailsDto.getUserId());
@@ -464,6 +464,7 @@ public class AppUserDetailsService implements UserDetailsService {
                    if(userDetailsDto.getDrinking()!=null){
                        appUser.setDrinking(userDetailsDto.getDrinking());
                    }
+
 
                    updateLastActive(appUser.getId());
 

@@ -1,9 +1,6 @@
 package com.pages.controller;
 
-import com.pages.dto.ChangePasswordDto;
-import com.pages.dto.ResponseDto;
-import com.pages.dto.UserDetailsDto;
-import com.pages.dto.UserRegistrationRequest;
+import com.pages.dto.*;
 import com.pages.exception.EntityNotFoundException;
 import com.pages.model.AppUser;
 import com.pages.service.AppUserDetailsService;
@@ -51,7 +48,7 @@ public class AppUserController {
     }
 
     @PatchMapping(value = "/update-data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Boolean> updateUserData(@ModelAttribute UserDetailsDto userDetailsDto){
+    public ResponseEntity<Boolean> updateUserData(@ModelAttribute UserDetailsUpdateDto userDetailsDto){
          return ResponseEntity.ok(userDetailsService.updateUserDetails(userDetailsDto));
     }
 

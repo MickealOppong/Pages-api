@@ -2,19 +2,17 @@ package com.pages.dto;
 
 import jakarta.persistence.Column;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @Builder
-public class UserDetailsDto {
+public class UserDetailsUpdateDto {
 
     private Long userId;
     private String firstName;
@@ -42,7 +40,4 @@ public class UserDetailsDto {
     private String aboutThem;
     private MultipartFile media;
     private String profileImage;
-    private boolean hasMatchRequest ;
-    private boolean rulesAccepted;
-    private List<PostDto> postDtoList;
 }
