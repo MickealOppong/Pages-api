@@ -79,9 +79,6 @@ public class AppUser extends LogEntity implements UserDetails {
     private boolean rulesAccepted = false;
 
 
-    // =========================================================
-    // DATING INFORMATION
-    // =========================================================
 
     private String drinking;
 
@@ -107,10 +104,6 @@ public class AppUser extends LogEntity implements UserDetails {
     @Column(length = 1024)
     private String aboutThem;
 
-
-    // =========================================================
-    // SPRING SECURITY ACCOUNT STATUS
-    // =========================================================
 
     @Column(nullable = false)
     @Builder.Default

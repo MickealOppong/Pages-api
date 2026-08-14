@@ -314,7 +314,7 @@ public class PostService {
                         .status(post.getStatus())
                         .userId(author.getId())
                         .viewsCount(post.getViewsCount())
-                        .date_of_birth(author.getDate_of_birth())
+                        .date_of_birth(author.getDateOfBirth())
                         .location(author.getCity())
                         .media(postMediaDto.getMedia())
                         .profileImage(userMediaDto==null?null:userMediaDto.getMedia())

@@ -241,7 +241,7 @@ public class AppUserDetailsService implements UserDetailsService {
                       .aboutThem(user.getAboutThem())
                       .country(user.getCountry())
                       .pets(user.getPets())
-                      .date_of_birth(user.getDate_of_birth())
+                      .date_of_birth(user.getDateOfBirth())
                       .drinking(user.getDrinking())
                       .smoking(user.getSmoking())
                       .education(user.getEducation())
@@ -289,7 +289,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
         // 2. THE SECURITY GUARD: Validate unguessable profile values instead of sending an email link
         boolean cityMatches = user.getCity().equalsIgnoreCase(dto.getLocation().trim());
-        boolean dobMatches = user.getDate_of_birth().equals(dto.getDate_of_birth());
+        boolean dobMatches = user.getDateOfBirth().equals(dto.getDate_of_birth());
 
         if (!cityMatches || !dobMatches) {
             throw new IllegalArgumentException("Verification parameters do not match our system security logs.");
@@ -326,7 +326,7 @@ public class AppUserDetailsService implements UserDetailsService {
                         .aboutThem(user.getAboutThem())
                         .country(user.getCountry())
                         .pets(user.getPets())
-                        .date_of_birth(user.getDate_of_birth())
+                        .date_of_birth(user.getDateOfBirth())
                         .drinking(user.getDrinking())
                         .smoking(user.getSmoking())
                         .height(user.getHeight())

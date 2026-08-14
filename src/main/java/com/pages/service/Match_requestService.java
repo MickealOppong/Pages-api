@@ -148,7 +148,7 @@ public class Match_requestService {
                                 .senderId(targetUser.getId())
                                 .activity(post.getType())
                                 .requestDate(mr.getCreatedAt())
-                                .date_of_birth(targetUser.getDate_of_birth())
+                                .date_of_birth(targetUser.getDateOfBirth())
                                 .image(picture)
                                 .build();
                     }
@@ -204,7 +204,7 @@ public class Match_requestService {
                     .activity(post)
                     .firstName(targetUser.getFirstName())
                     .lastName(targetUser.getLastName())
-                    .date_of_birth(targetUser.getDate_of_birth())
+                    .date_of_birth(targetUser.getDateOfBirth())
                     .image(picture)
                     .build();
         }
@@ -263,7 +263,7 @@ public class Match_requestService {
                     .receiverId(matchRequests.getReceiverId().getId())
                     .firstName(targetUser.getFirstName())
                     .lastName(targetUser.getLastName())
-                    .date_of_birth(targetUser.getDate_of_birth())
+                    .date_of_birth(targetUser.getDateOfBirth())
                     .image(picture)
                     .lastMessage(lastMessage)
                     .isOnline(isOnline)
