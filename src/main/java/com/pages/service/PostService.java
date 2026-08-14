@@ -31,6 +31,7 @@ import java.util.Set;
 
 @Slf4j
 @Service
+@Transactional
 public class PostService {
 
     private final PostRepo postRepo;
@@ -44,7 +45,7 @@ public class PostService {
         this.appUserDetailsService = appUserDetailsService;
     }
 
-    @Transactional
+
     public ResponseDto<Object> saveBroadcast(CreateMomentDto createMomentDto, MultipartFile media) {
 
         Media savedMedia = null;
@@ -116,15 +117,11 @@ public class PostService {
         }
     }
 
-    private void deletePost(Long postId)throws IOException {
-        postRepo.deleteById(postId);
-        mediaService.delete(postId);
 
-    }
 
     public DeleteResponseDto deletePostById(Long postId){
         try{
-            deletePost(postId);
+            postRepo.deleteById(postId);
            return DeleteResponseDto.builder()
                             .deleted(true)
                              .message("Deleted")
@@ -132,9 +129,9 @@ public class PostService {
                             .build();
         }catch (Exception e){
             return DeleteResponseDto.builder()
-                    .deleted(true)
+                    .deleted(false)
                     .message(e.getMessage())
-                    .httpStatus(HttpStatus.OK)
+                    .httpStatus(HttpStatus.FORBIDDEN)
                     .build();
         }
     }

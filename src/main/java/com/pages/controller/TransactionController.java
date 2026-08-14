@@ -62,18 +62,7 @@ public class TransactionController {
 
     @DeleteMapping("/broadcast/delete/{id}")
     public ResponseDto<Object> deletePost(Long postId){
-     try{
-         postService.deletePostById(postId);
-         return ResponseDto.builder()
-                 .message("Deleted")
-                 .httpStatus(HttpStatus.OK)
-                 .build();
-     }catch (Exception ex){
-         return ResponseDto.builder()
-                 .message(ex.getMessage())
-                 .httpStatus(HttpStatus.BAD_REQUEST)
-                 .build();
-     }
+        return postService.deletePostById(postId);
     }
 
     @PostMapping(value= "/broadcast",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
