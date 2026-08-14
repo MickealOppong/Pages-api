@@ -136,4 +136,7 @@ public interface PostRepo extends JpaRepository<Post,Long>, JpaSpecificationExec
 
     @Query("select p.media.path from Post p where p.appUser.id = :userId")
     List<String> findMediaPathsByUserId(Long userId);
+
+    @Query("select p.media.path from Post p where p.postId = :postId")
+    String findMediaPathsByPostId(Long postId);
 }

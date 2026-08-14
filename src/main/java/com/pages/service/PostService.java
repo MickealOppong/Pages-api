@@ -121,7 +121,9 @@ public class PostService {
 
     public DeleteResponseDto deletePostById(Long postId){
         try{
+            String mediaPath = postRepo.findMediaPathsByPostId(postId);
             postRepo.deleteById(postId);
+            mediaService.delete(mediaPath);
            return DeleteResponseDto.builder()
                             .deleted(true)
                              .message("Deleted")
