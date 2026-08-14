@@ -1,309 +1,197 @@
 package com.pages.model;
 
+import com.fasterxml.jackson.annotation.JsonDeserializeAs;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pages.util.LogEntity;
 import com.pages.util.Media;
+import com.pages.util.Notification;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.swing.text.View;
+import java.sql.Ref;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @EqualsAndHashCode(
         callSuper = false,
         onlyExplicitlyIncluded = true
 )
 @Entity
+@Table
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class AppUser extends LogEntity implements UserDetails {
 
-    // =========================================================
-    // IDENTITY
-    // =========================================================
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id@GeneratedValue
     @Column(name = "userId")
-    @EqualsAndHashCode.Include
     private Long id;
 
     private String firstName;
-
     private String lastName;
-
-    @Column(nullable = false, unique = true)
     private String username;
 
     private String gender;
-
-    @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    private LocalDate date_of_birth;
 
     private String password;
 
-
-    // =========================================================
-    // LOCATION / PREFERENCES
-    // =========================================================
-
     private String city;
-
     private String country;
-
     private String preference;
 
-
-    // =========================================================
-    // ACCOUNT / CONSENT
-    // =========================================================
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean termsChecked = false;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean rulesAccepted = false;
-
-
-
+    private boolean isTermsChecked;
+    //dating information
     private String drinking;
-
     private String pets;
-
     private String exercises;
-
     private String smoking;
-
     private String profession;
-
     private String education;
-
     private String language;
-
     private String height;
 
     private String lookingFor;
-
     @Column(length = 1024)
     private String aboutMe;
-
     @Column(length = 1024)
     private String aboutThem;
+    //account status
+    private boolean isEnabled;
+    private boolean isAccountNonExpired;
+    private boolean isAccountNonLocked;
+    private boolean isCredentialsNonExpired;
+
+    private boolean hideMyAge;
+
+    // Use primitive lowercase 'boolean' to guarantee Java defaults it to false
+    @Column(
+            name = "rules_accepted",
+            nullable = false,
+            columnDefinition = "TINYINT(1) DEFAULT 0" // Forces MySQL schema stability
+    )
+    private boolean rulesAccepted;
 
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean enabled = true;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean accountNonExpired = true;
+    private Instant lastActive;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean accountNonLocked = true;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean credentialsNonExpired = true;
-
-
-    // =========================================================
-    // PRIVACY
-    // =========================================================
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean hideMyAge = false;
-
-
-    // =========================================================
-    // ACTIVITY
-    // =========================================================
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Instant lastActive = Instant.now();
-
-
-    // =========================================================
-    // RELATIONSHIPS
-    // =========================================================
-
+    //User role
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "app_user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "app_user_roles", // The name of your join table
+            joinColumns = @JoinColumn(name = "user_id"), // Foreign key for AppUser
+            inverseJoinColumns = @JoinColumn(name = "role_id") // Foreign key for AppUserRole
     )
-    @Builder.Default
     private Set<AppUserRole> userRole = new HashSet<>();
 
 
-    // Profile picture
+    //profile picture
     @OneToOne
     private Media media;
 
-
-    // Refresh tokens
-    @OneToMany(
-            mappedBy = "appUser",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @Builder.Default
+    @OneToMany(mappedBy = "appUser",cascade = CascadeType.ALL)
     private List<RefreshToken> tokens = new ArrayList<>();
 
 
-    // =========================================================
-    // REGISTRATION CONSTRUCTOR
-    // =========================================================
 
-    public AppUser(
-            String firstName,
-            String lastName,
-            String username,
-            String gender,
-            LocalDate dateOfBirth,
-            String password,
-            String city,
-            boolean termsChecked
-    ) {
 
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String location,boolean isTermsChecked){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.gender = gender;
-        this.dateOfBirth = dateOfBirth;
+        this.date_of_birth = dob;
         this.password = password;
-        this.city = city;
-
-        this.country = "Poland";
-
+        this.gender = gender;
         this.preference = getDefaultPreference(gender);
-
+        this.isAccountNonExpired =true;
         this.lookingFor = getDefaultLookingFor();
-
-        this.termsChecked = termsChecked;
-
-        /*
-         * Account defaults
-         */
-        this.enabled = true;
-        this.accountNonExpired = true;
-        this.accountNonLocked = true;
-        this.credentialsNonExpired = true;
-
-        /*
-         * Consent defaults
-         */
+        this.isEnabled = true;
+        this.isAccountNonLocked = true;
+        this.isCredentialsNonExpired = true;
         this.rulesAccepted = false;
-
-        /*
-         * Privacy defaults
-         */
-        this.hideMyAge = false;
-
-        /*
-         * Activity
-         */
+        this.city = location;
         this.lastActive = Instant.now();
+        this.isTermsChecked = isTermsChecked;
+        this.country = getDefaultCountry();
     }
 
 
-    // =========================================================
-    // DEFAULT VALUES
-    // =========================================================
 
-    private String getDefaultPreference(String gender) {
-
-        if (gender == null) {
-            return null;
+    public String getDefaultPreference(String gender){
+        String myPref = null;
+        if(gender.equalsIgnoreCase("male")){
+            myPref = "Female";
+        }
+        if(gender.equalsIgnoreCase("female")){
+            myPref = "Male";
+        }
+        if(gender.equalsIgnoreCase("non-binary")){
+            myPref = "Non-binary";
         }
 
-        return switch (gender.trim().toLowerCase()) {
-
-            case "male" -> "Female";
-
-            case "female" -> "Male";
-
-            case "non-binary" -> "Non-binary";
-
-            default -> null;
-        };
+        return myPref;
     }
 
-
-    private String getDefaultLookingFor() {
+    public String getDefaultLookingFor(){
         return "Long-term Relationship";
     }
 
-
-    // =========================================================
-    // SPRING SECURITY
-    // =========================================================
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        for (AppUserRole role : userRole) {
-
-            authorities.add(
-                    new SimpleGrantedAuthority(role.getRole())
-            );
+        for(AppUserRole role: userRole){
+            authorities.add(new SimpleGrantedAuthority(role.getRole()));
         }
-
         return authorities;
     }
 
-
     @Override
-    public String getPassword() {
-        return password;
+    public @Nullable String getPassword() {
+        return this.password;
     }
-
 
     @Override
     public String getUsername() {
-        return username;
+        return this.username;
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
-        return accountNonExpired;
+        return this.isAccountNonExpired;
     }
-
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountNonLocked;
+        return this.isAccountNonLocked;
     }
-
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
+        return this.isCredentialsNonExpired;
     }
-
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return this.isEnabled;
     }
+
+
+    public String getDefaultCountry(){
+        return this.country = "Poland";
+    }
+
+
 }
