@@ -75,6 +75,13 @@ public class AppUser extends LogEntity implements UserDetails {
     private boolean isCredentialsNonExpired;
 
     private boolean hideMyAge;
+
+    // Use primitive lowercase 'boolean' to guarantee Java defaults it to false
+    @Column(
+            name = "rules_accepted",
+            nullable = false,
+            columnDefinition = "TINYINT(1) DEFAULT 0" // Forces MySQL schema stability
+    )
     private boolean rulesAccepted;
 
 
