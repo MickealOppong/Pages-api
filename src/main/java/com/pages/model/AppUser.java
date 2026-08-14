@@ -36,7 +36,7 @@ public class AppUser extends LogEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "userId")
     @EqualsAndHashCode.Include
     private Long id;
 
