@@ -22,7 +22,6 @@ import java.util.Set;
         onlyExplicitlyIncluded = true
 )
 @Entity
-@Table(name = "app_user")
 @Getter
 @Setter
 @NoArgsConstructor
