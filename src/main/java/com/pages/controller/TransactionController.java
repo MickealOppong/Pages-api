@@ -61,7 +61,7 @@ public class TransactionController {
 
 
     @DeleteMapping("/broadcast/delete/{id}")
-    public ResponseDto<Object> deletePost(Long postId){
+    public DeleteResponseDto deletePost(Long postId){
         return postService.deletePostById(postId);
     }
 
