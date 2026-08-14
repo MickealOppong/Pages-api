@@ -248,7 +248,7 @@ public class AppUserDetailsService implements UserDetailsService {
                       .hasMatchRequest(matchRequest)
                       .height(user.getHeight())
                       .gender(user.getGender())
-                      .acceptedRules(user.isRulesAccepted())
+                      .rulesAccepted(user.isRulesAccepted())
                       .preference(user.getPreference())
                       .lookingFor(user.getLookingFor())
                       .postDtoList(postDtoList)
@@ -374,7 +374,7 @@ public class AppUserDetailsService implements UserDetailsService {
                         .userId(user.getId())
                         .firstName(user.getFirstName())
                         .lastName(user.getLastName())
-                        .acceptedRules(user.isRulesAccepted())
+                        .rulesAccepted(user.isRulesAccepted())
                         .profileImage(user.getMedia()!=null? mediaService.getImage(user.getMedia().getId()):null)
                         .build();
 

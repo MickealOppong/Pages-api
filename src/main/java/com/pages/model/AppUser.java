@@ -122,23 +122,6 @@ public class AppUser extends LogEntity implements UserDetails {
     }
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate date_of_birth,String password,Set<AppUserRole> role,String location){
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.password = password;
-        this.gender = gender;
-        this.city = location;
-        this.date_of_birth = date_of_birth;
-        this.userRole = role;
-        this.isAccountNonExpired =true;
-        this.rulesAccepted = false;
-        this.isEnabled = true;
-        this.isAccountNonLocked = true;
-        this.isCredentialsNonExpired = true;
-        this.lastActive = Instant.now();
-        this.country = getDefaultCountry();
-    }
 
     public String getDefaultPreference(String gender){
         String myPref = null;
