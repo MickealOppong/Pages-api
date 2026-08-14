@@ -39,7 +39,7 @@ public class UserDetailsDto {
     private String aboutThem;
     private MultipartFile media;
     private String profileImage;
-    private Boolean hasMatchRequest;
+    private boolean hasMatchRequest;
     private boolean rulesAccepted;
     private List<PostDto> postDtoList;
 }
