@@ -41,10 +41,13 @@ public class AppUser extends LogEntity implements UserDetails {
 
     private String firstName;
     private String lastName;
+
+    @Column(nullable = false, unique = true)
     private String username;
 
     private String gender;
-    private LocalDate date_of_birth;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     private String password;
 
@@ -52,7 +55,8 @@ public class AppUser extends LogEntity implements UserDetails {
     private String country;
     private String preference;
 
-    private boolean isTermsChecked;
+    @Builder.Default
+    private boolean isTermsChecked =false;
     //dating information
     private String drinking;
     private String pets;
@@ -68,21 +72,29 @@ public class AppUser extends LogEntity implements UserDetails {
     private String aboutMe;
     @Column(length = 1024)
     private String aboutThem;
+
     //account status
-    private boolean isEnabled;
-    private boolean isAccountNonExpired;
-    private boolean isAccountNonLocked;
-    private boolean isCredentialsNonExpired;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean enabled = false;
 
-    private boolean hideMyAge;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean accountNonExpired = false;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean accountNonLocked = false;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean credentialsNonExpired =false;
 
-    // Use primitive lowercase 'boolean' to guarantee Java defaults it to false
-    @Column(
-            name = "rules_accepted",
-            nullable = false,
-            columnDefinition = "TINYINT(1) DEFAULT 0" // Forces MySQL schema stability
-    )
-    private boolean rulesAccepted;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean hideMyAge = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean rulesAccepted = false;
 
 
 
@@ -112,16 +124,11 @@ public class AppUser extends LogEntity implements UserDetails {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.date_of_birth = dob;
+        this.dateOfBirth = dob;
         this.password = password;
         this.gender = gender;
         this.preference = getDefaultPreference(gender);
-        this.isAccountNonExpired =true;
         this.lookingFor = getDefaultLookingFor();
-        this.isEnabled = true;
-        this.isAccountNonLocked = true;
-        this.isCredentialsNonExpired = true;
-        this.rulesAccepted = false;
         this.city = location;
         this.lastActive = Instant.now();
         this.isTermsChecked = isTermsChecked;
@@ -170,22 +177,22 @@ public class AppUser extends LogEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.isAccountNonExpired;
+        return this.accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.isAccountNonLocked;
+        return this.accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.isCredentialsNonExpired;
+        return this.credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.isEnabled;
+        return this.enabled;
     }
 
 
