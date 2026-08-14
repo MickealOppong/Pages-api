@@ -76,17 +76,17 @@ public class AppUser extends LogEntity implements UserDetails {
     //account status
     @Column(nullable = false)
     @Builder.Default
-    private boolean enabled = false;
+    private boolean enabled =true;
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean accountNonExpired = false;
+    private boolean accountNonExpired =true;
     @Column(nullable = false)
     @Builder.Default
-    private boolean accountNonLocked = false;
+    private boolean accountNonLocked =true;
     @Column(nullable = false)
     @Builder.Default
-    private boolean credentialsNonExpired =false;
+    private boolean credentialsNonExpired =true;
 
     @Column(nullable = false)
     @Builder.Default
