@@ -24,12 +24,12 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 
+    @Value("${MEDIA_UPLOAD_DIR:./local-media/}") // Falls back to a local folder when running on your computer
+    private String mediaUploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 1. Fixed "user.home" property name (must be lowercase)
-        // 2. Added explicit trailing slash for Spring to recognize it as a directory
-        String path = "file:" + System.getProperty("user.home") + "/App-media0dir/";
-
+        String path = "file:" + mediaUploadDir;
         registry.addResourceHandler("/Media/**")
                 .addResourceLocations(path);
     }
