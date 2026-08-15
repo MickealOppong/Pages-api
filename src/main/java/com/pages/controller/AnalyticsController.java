@@ -1,12 +1,13 @@
 package com.pages.controller;
 
+import com.pages.dto.MatchResultDto;
 import com.pages.service.AnalyticsService;
 import com.pages.service.AppUserDetailsService;
+import com.pages.service.MatchEngineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
     private final AppUserDetailsService appUserDetailsService;
+    private final MatchEngineService matchEngineService;
 
 
     @PatchMapping("/view")
@@ -38,5 +40,10 @@ public class AnalyticsController {
         // Implementation detail depending on your Security Config (e.g., custom user wrapper entity return)
        String username= jwt.getSubject();
        return appUserDetailsService.getAppUserByUsername(username).getId();
+    }
+
+    @GetMapping("/compatibility")
+    public MatchResultDto compatibility(@RequestParam Long userA,@RequestParam Long userB){
+        return matchEngineService.evaluateFullCompatibility(userA,userB);
     }
 }
