@@ -97,6 +97,9 @@ public class AppUser extends LogEntity implements UserDetails {
     private boolean rulesAccepted = false;
 
 
+    private String planningStyle;
+    private String socialEnergy;
+    private String chronoType;
 
     private Instant lastActive;
 

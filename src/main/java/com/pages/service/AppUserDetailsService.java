@@ -331,6 +331,9 @@ public class AppUserDetailsService implements UserDetailsService {
                         .smoking(user.getSmoking())
                         .height(user.getHeight())
                         .education(user.getEducation())
+                        .planningStyle(user.getPlanningStyle())
+                        .socialEnergy(user.getSocialEnergy())
+                        .chronoType(user.getChronoType())
                         .gender(user.getGender())
                         .preference(user.getPreference())
                         .lookingFor(user.getLookingFor())
@@ -465,6 +468,17 @@ public class AppUserDetailsService implements UserDetailsService {
                        appUser.setDrinking(userDetailsDto.getDrinking());
                    }
 
+                if(userDetailsDto.getChronoType()!=null){
+                    appUser.setChronoType(userDetailsDto.getChronoType());
+                }
+
+                if(userDetailsDto.getSocialEnergy()!=null){
+                    appUser.setSocialEnergy(userDetailsDto.getSocialEnergy());
+                }
+
+                if(userDetailsDto.getPlanningStyle()!=null){
+                    appUser.setPlanningStyle(userDetailsDto.getPlanningStyle());
+                }
 
                    updateLastActive(appUser.getId());
 

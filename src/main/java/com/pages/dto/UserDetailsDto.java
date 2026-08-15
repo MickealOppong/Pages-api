@@ -45,4 +45,8 @@ public class UserDetailsDto {
     private boolean hasMatchRequest ;
     private boolean rulesAccepted;
     private List<PostDto> postDtoList;
+
+    private String planningStyle;
+    private String socialEnergy;
+    private String chronoType;
 }

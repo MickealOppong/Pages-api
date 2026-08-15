@@ -40,4 +40,8 @@ public class UserDetailsUpdateDto {
     private String aboutThem;
     private MultipartFile media;
     private String profileImage;
+
+    private String planningStyle;
+    private String socialEnergy;
+    private String chronoType;
 }

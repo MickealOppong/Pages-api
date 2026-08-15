@@ -70,6 +70,43 @@ public class MatchEngineService {
         if (userA.getDrinking() != null && sharedHobbies.contains("DRINKING_" + userA.getDrinking().trim().toUpperCase())) score += 15;
         if (userA.getSmoking() != null && sharedHobbies.contains("SMOKING_" + userA.getSmoking().trim().toUpperCase())) score += 15;
 
+
+        // Define helper arrays inside evaluation blocks
+        if (userA.getSocialEnergy() != null && userB.getSocialEnergy() != null) {
+            String seA = userA.getSocialEnergy().trim().toUpperCase();
+            String seB = userB.getSocialEnergy().trim().toUpperCase();
+
+            if ((seA.equals("INTROVERT") && seB.equals("EXTROVERT")) ||
+                    (seA.equals("EXTROVERT") && seB.equals("INTROVERT"))) {
+                score += 20;
+                sharedHobbies.add("SYNERGY_OPPOSITE_SOCIAL_ENERGY");
+            }
+        }
+
+        if (userA.getPlanningStyle() != null && userB.getPlanningStyle() != null) {
+            String psA = userA.getPlanningStyle().trim().toUpperCase();
+            String psB = userB.getPlanningStyle().trim().toUpperCase();
+
+            if ((psA.equals("STRUCTURED PLANNER") && psB.equals("SPONTANEOUS")) ||
+                    (psA.equals("SPONTANEOUS") && psB.equals("STRUCTURED PLANNER"))) {
+                score += 20;
+                sharedHobbies.add("SYNERGY_OPPOSITE_PLANNING_STYLE");
+            }
+        }
+
+        if (userA.getChronoType() != null && userB.getChronoType() != null) {
+            String psA = userA.getChronoType().trim().toUpperCase();
+            String psB = userB.getChronoType().trim().toUpperCase();
+
+            if ((psA.equals("NIGHT OWL") && psB.equals("EARLY BIRD")) ||
+                    (psA.equals("EARLY BIRD") && psB.equals("NIGHT OWL"))) {
+                score += 20;
+                sharedHobbies.add("SYNERGY_OPPOSITE_CHRONO_TYPE");
+            }
+        }
+
+
+
         // Add 10 points for every standard shared moment category remaining
         long sharedMomentsCount = sharedHobbies.stream()
                 .filter(tag -> !tag.startsWith("LOOKING_FOR_") &&

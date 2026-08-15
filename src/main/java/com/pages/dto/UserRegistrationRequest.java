@@ -60,4 +60,6 @@ public class UserRegistrationRequest {
     @AssertTrue(message = "You must accept the Terms and Conditions to proceed")
     private boolean isTermsChecked;
 
+
+
 }
