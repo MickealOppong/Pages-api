@@ -282,28 +282,40 @@ public class AppUserDetailsService implements UserDetailsService {
     }
 
 
-    public boolean resetPasswordViaProfileFacts(ResetPasswordDto dto) {
-        // 1. Locate account by email input criteria
-        AppUser user = appUserRepo.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("No registered account found with that email address."));
+    public ResponseDto<Object> resetPasswordViaProfileFacts(ResetPasswordDto dto) {
+        try {
+            // 1. Locate account by email input criteria
+            AppUser user = appUserRepo.findByUsername(dto.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("No registered account found with that email address."));
 
-        // 2. THE SECURITY GUARD: Validate unguessable profile values instead of sending an email link
-        boolean cityMatches = user.getCity().equalsIgnoreCase(dto.getLocation().trim());
-        boolean dobMatches = user.getDateOfBirth().equals(dto.getDate_of_birth());
+            // 2. THE SECURITY GUARD: Validate unguessable profile values instead of sending an email link
+            boolean cityMatches = user.getCity().equalsIgnoreCase(dto.getLocation().trim());
+            boolean dobMatches = user.getDateOfBirth().equals(dto.getDate_of_birth());
 
-        if (!cityMatches || !dobMatches) {
-            throw new IllegalArgumentException("Verification parameters do not match our system security logs.");
+            if (!cityMatches || !dobMatches) {
+                throw new IllegalArgumentException("Verification parameters do not match our system security logs.");
+            }
+
+            // 3. Confirm target password string layouts align perfectly
+            if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+                throw new IllegalArgumentException("New password fields do not match.");
+            }
+
+            // 4. Cryptographically hash new token string and flush row permanently
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            appUserRepo.save(user);
+            return  ResponseDto.builder()
+                    .data(true)
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("Password reset successfully")
+                    .build();
+        }catch (Exception e){
+            return  ResponseDto.builder()
+                    .data(false)
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message(e.getMessage())
+                    .build();
         }
-
-        // 3. Confirm target password string layouts align perfectly
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new IllegalArgumentException("New password fields do not match.");
-        }
-
-        // 4. Cryptographically hash new token string and flush row permanently
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        appUserRepo.save(user);
-        return true;
     }
 
     public ResponseDto<Object> getAppUserProfile(Long userId){

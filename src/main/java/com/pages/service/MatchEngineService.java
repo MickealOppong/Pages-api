@@ -31,11 +31,22 @@ public class MatchEngineService {
         AppUser userB = userRepository.findById(userBId)
                 .orElseThrow(() -> new EntityNotFoundException("User B not found"));
 
-        // 2. Fetch Post History Data
+        // 2. Fetch Pure Post History Data (Genuine Shared Moments / Hobbies)
         Set<String> userAAll = new HashSet<>(postRepo.findDistinctTypesByUserId(userAId));
         Set<String> userBAll = new HashSet<>(postRepo.findDistinctTypesByUserId(userBId));
 
-        // 3. VIRTUALIZATION: Inject attributes with specialized type prefixes
+        // Calculate pure shared moments BEFORE modifying collections with core traits or synergy keys
+        Set<String> pureSharedMoments = new HashSet<>(userAAll);
+        pureSharedMoments.retainAll(userBAll);
+
+        // Each matching post history/moment type yields 10 points
+        int score = 0;
+
+        // 1. Pure Shared Moments: High Behavioral Weight (+10 per shared item, capped at 40)
+        int momentsScore = pureSharedMoments.size() * 10;
+        score += Math.min(momentsScore, 40);
+
+        // 3. VIRTUALIZATION: Inject static attributes with specialized type prefixes
         if (userA.getLookingFor() != null) userAAll.add("LOOKING_FOR_" + userA.getLookingFor().trim().toUpperCase());
         if (userB.getLookingFor() != null) userBAll.add("LOOKING_FOR_" + userB.getLookingFor().trim().toUpperCase());
 
@@ -51,71 +62,82 @@ public class MatchEngineService {
         if (userA.getSmoking() != null) userAAll.add("SMOKING_" + userA.getSmoking().trim().toUpperCase());
         if (userB.getSmoking() != null) userBAll.add("SMOKING_" + userB.getSmoking().trim().toUpperCase());
 
-        // 4. COMPUTE SHARED COMPONENTS (Center Overlap)
+        // 4. COMPUTE TOTAL SHARED COMPONENTS OVERLAP (Including matching profile attributes)
         Set<String> sharedHobbies = new HashSet<>(userAAll);
         sharedHobbies.retainAll(userBAll);
 
-        // 5. COMPUTE UNIQUE REMAINDERS (Outer Left & Right Panels)
+        // Calculate specific points for matched profile attributes
+        if (userA.getLookingFor() != null && sharedHobbies.contains("LOOKING_FOR_" + userA.getLookingFor().trim().toUpperCase())) score += 10;
+        if (userA.getPets() != null && sharedHobbies.contains("PET_" + userA.getPets().trim().toUpperCase())) score += 10;
+        if (userA.getEducation() != null && sharedHobbies.contains("EDUCATION_" + userA.getEducation().trim().toUpperCase())) score += 5;
+        if (userA.getDrinking() != null && sharedHobbies.contains("DRINKING_" + userA.getDrinking().trim().toUpperCase())) score += 10;
+        if (userA.getSmoking() != null && sharedHobbies.contains("SMOKING_" + userA.getSmoking().trim().toUpperCase())) score += 15;
+
+        // 5. EVALUATE COMPLEMENTARY OPPOSITES SYNERGY
+        // 1. Social Energy (Introvert / Extrovert / Ambivert / Flexible)
+        if (userA.getSocialEnergy() != null && userB.getSocialEnergy() != null) {
+            String seA = userA.getSocialEnergy().trim().toUpperCase();
+            String seB = userB.getSocialEnergy().trim().toUpperCase();
+
+            // CASE A: Both are flexible (Shared harmony)
+            if ((seA.equals("AMBIVERT") || seA.equals("FLEXIBLE") || seA.equals("IT DEPENDS")) &&
+                    (seB.equals("AMBIVERT") || seB.equals("FLEXIBLE") || seB.equals("IT DEPENDS"))) {
+                score += 20; // 10 for shared trait + 10 for synergy balance
+                sharedHobbies.add("SYNERGY_OPPOSITE_SOCIAL_ENERGY");
+            }
+            // CASE B: Classic polar opposites (Complementary chemistry)
+            else if ((seA.equals("INTROVERT") && seB.equals("EXTROVERT")) ||
+                    (seA.equals("EXTROVERT") && seB.equals("INTROVERT"))) {
+                score += 15;
+                sharedHobbies.add("SYNERGY_OPPOSITE_SOCIAL_ENERGY");
+            }
+        }
+
+        // 2. Planning Style (Structured / Spontaneous / Flexible / It Depends)
+        if (userA.getPlanningStyle() != null && userB.getPlanningStyle() != null) {
+            String psA = userA.getPlanningStyle().trim().toUpperCase();
+            String psB = userB.getPlanningStyle().trim().toUpperCase();
+
+            // CASE A: Both are flexible adaptors
+            if ((psA.equals("FLEXIBLE") || psA.equals("IT_DEPENDS") || psA.equals("IT DEPENDS")) &&
+                    (psB.equals("FLEXIBLE") || psB.equals("IT_DEPENDS") || psB.equals("IT DEPENDS"))) {
+                score += 20;
+                sharedHobbies.add("SYNERGY_OPPOSITE_PLANNING_STYLE");
+            }
+            // CASE B: Classic polar opposites
+            else if ((psA.equals("STRUCTURED PLANNER") && psB.equals("SPONTANEOUS")) ||
+                    (psA.equals("SPONTANEOUS") && psB.equals("STRUCTURED PLANNER"))) {
+                score += 15;
+                sharedHobbies.add("SYNERGY_OPPOSITE_PLANNING_STYLE");
+            }
+        }
+
+        // 3. Chronotype (Early Bird / Night Owl / Flexible)
+        if (userA.getChronoType() != null && userB.getChronoType() != null) {
+            String ctA = userA.getChronoType().trim().toUpperCase();
+            String ctB = userB.getChronoType().trim().toUpperCase();
+
+            // CASE A: Both have flexible internal clocks
+            if ((ctA.equals("FLEXIBLE") || ctA.equals("IT DEPENDS")) &&
+                    (ctB.equals("FLEXIBLE") || ctB.equals("IT DEPENDS"))) {
+                score += 20;
+                sharedHobbies.add("SYNERGY_OPPOSITE_CHRONO_TYPE");
+            }
+            // CASE B: Classic polar opposites
+            else if ((ctA.equals("NIGHT OWL") && ctB.equals("EARLY BIRD")) ||
+                    (ctA.equals("EARLY BIRD") && ctB.equals("NIGHT OWL"))) {
+                score += 15;
+                sharedHobbies.add("SYNERGY_OPPOSITE_CHRONO_TYPE");
+            }
+        }
+
+        // 6. COMPUTE UNIQUE REMAINDERS
+        // Elements added to sharedHobbies after intersections must be cleared out of unique maps
         Set<String> userAUnique = new HashSet<>(userAAll);
         userAUnique.removeAll(sharedHobbies);
 
         Set<String> userBUnique = new HashSet<>(userBAll);
         userBUnique.removeAll(sharedHobbies);
-
-        // 6. Calculate Dynamic Score: Query the exact prefixed strings inside the shared collection
-        int score = 0;
-        if (userA.getLookingFor() != null && sharedHobbies.contains("LOOKING_FOR_" + userA.getLookingFor().trim().toUpperCase())) score += 40;
-        if (userA.getPets() != null && sharedHobbies.contains("PET_" + userA.getPets().trim().toUpperCase())) score += 15;
-        if (userA.getEducation() != null && sharedHobbies.contains("EDUCATION_" + userA.getEducation().trim().toUpperCase())) score += 15;
-        if (userA.getDrinking() != null && sharedHobbies.contains("DRINKING_" + userA.getDrinking().trim().toUpperCase())) score += 15;
-        if (userA.getSmoking() != null && sharedHobbies.contains("SMOKING_" + userA.getSmoking().trim().toUpperCase())) score += 15;
-
-
-        // Define helper arrays inside evaluation blocks
-        if (userA.getSocialEnergy() != null && userB.getSocialEnergy() != null) {
-            String seA = userA.getSocialEnergy().trim().toUpperCase();
-            String seB = userB.getSocialEnergy().trim().toUpperCase();
-
-            if ((seA.equals("INTROVERT") && seB.equals("EXTROVERT")) ||
-                    (seA.equals("EXTROVERT") && seB.equals("INTROVERT"))) {
-                score += 20;
-                sharedHobbies.add("SYNERGY_OPPOSITE_SOCIAL_ENERGY");
-            }
-        }
-
-        if (userA.getPlanningStyle() != null && userB.getPlanningStyle() != null) {
-            String psA = userA.getPlanningStyle().trim().toUpperCase();
-            String psB = userB.getPlanningStyle().trim().toUpperCase();
-
-            if ((psA.equals("STRUCTURED PLANNER") && psB.equals("SPONTANEOUS")) ||
-                    (psA.equals("SPONTANEOUS") && psB.equals("STRUCTURED PLANNER"))) {
-                score += 20;
-                sharedHobbies.add("SYNERGY_OPPOSITE_PLANNING_STYLE");
-            }
-        }
-
-        if (userA.getChronoType() != null && userB.getChronoType() != null) {
-            String psA = userA.getChronoType().trim().toUpperCase();
-            String psB = userB.getChronoType().trim().toUpperCase();
-
-            if ((psA.equals("NIGHT OWL") && psB.equals("EARLY BIRD")) ||
-                    (psA.equals("EARLY BIRD") && psB.equals("NIGHT OWL"))) {
-                score += 20;
-                sharedHobbies.add("SYNERGY_OPPOSITE_CHRONO_TYPE");
-            }
-        }
-
-
-
-        // Add 10 points for every standard shared moment category remaining
-        long sharedMomentsCount = sharedHobbies.stream()
-                .filter(tag -> !tag.startsWith("LOOKING_FOR_") &&
-                        !tag.startsWith("PET_") &&
-                        !tag.startsWith("EDUCATION_") &&
-                        !tag.startsWith("DRINKING_") &&
-                        !tag.startsWith("SMOKING_"))
-                .count();
-        score += (int) (sharedMomentsCount * 10);
 
         return MatchResultDto.builder()
                 .compatibilityScore(Math.min(score, 100))
@@ -124,6 +146,7 @@ public class MatchEngineService {
                 .userBUniqueHobbies(userBUnique)
                 .build();
     }
+
 
 
 }

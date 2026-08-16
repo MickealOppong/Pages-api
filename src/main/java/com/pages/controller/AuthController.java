@@ -46,8 +46,8 @@ public class AuthController {
     }
 
     @PutMapping("/reset")
-    public ResponseEntity<Boolean> verify(@RequestBody ResetPasswordDto dto ){
-        return ResponseEntity.ok(userDetailsService.resetPasswordViaProfileFacts(dto));
+    public ResponseDto<Object> verify(@RequestBody ResetPasswordDto dto ){
+        return userDetailsService.resetPasswordViaProfileFacts(dto);
     }
 
 
