@@ -228,6 +228,25 @@ public class LocationService {
 
     public LocationResponseDto searchCities(String query,String locale) {
 
+        // Safety fallback initialization
+        String cleanLanguage;
+
+        if (locale != null && !locale.isBlank()) {
+            // 1. Remove regional codes (e.g., converts "en-GB" or "de-DE" to "en" or "de")
+            String baseLang = locale.split("-")[0].toLowerCase();
+
+            // 2. Map 3-letter codes to standard 2-letter ISO variants
+            if ("twi".equals(baseLang)) {
+                cleanLanguage = "tw";
+            } else if (baseLang.length() == 2) {
+                cleanLanguage = baseLang;
+            } else {
+                cleanLanguage = "en";
+            }
+        }
+        else{
+            cleanLanguage = "en";
+        }
          try{
              GeoapifyResponse response = restClient.get()
                      .uri(uriBuilder -> uriBuilder
@@ -237,7 +256,7 @@ public class LocationService {
                              .queryParam("text", query.trim())
                              .queryParam("type", "city")
                              .queryParam("limit", 10)
-                             .queryParam("lang", locale)
+                             .queryParam("lang", cleanLanguage)
                              .queryParam("format", "json")
                              .queryParam("apiKey", apiKey)
                              .build()

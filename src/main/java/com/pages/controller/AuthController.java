@@ -75,7 +75,7 @@ public class AuthController {
         userDetailsService.add(newUser);
 
         // save location data to global address
-        if(userRegistrationRequest.getCountry()!=null && userRegistrationRequest.getCity()!=null){
+        if(userRegistrationRequest.getCountry()!=null || userRegistrationRequest.getCity()!=null){
             globalAddressService.addToAddress(userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(),userRegistrationRequest.getCountryCode(),
                     userRegistrationRequest.getLatitude(),userRegistrationRequest.getLongitude());
         }
