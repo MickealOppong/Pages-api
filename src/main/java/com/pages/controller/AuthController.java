@@ -5,6 +5,7 @@ import com.pages.exception.InvalidOperationException;
 import com.pages.model.AppUser;
 import com.pages.model.RefreshToken;
 import com.pages.service.AppUserDetailsService;
+import com.pages.service.GlobalAddressService;
 import com.pages.service.RefreshTokenService;
 import com.pages.service.TokenService;
 import jakarta.validation.Valid;
@@ -33,16 +34,18 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final GlobalAddressService globalAddressService;
 
 
 
     public AuthController(AuthenticationManager authenticationManager, AppUserDetailsService userDetailsService,
-                          RefreshTokenService refreshTokenService, TokenService tokenService, PasswordEncoder passwordEncoder) {
+                          RefreshTokenService refreshTokenService, TokenService tokenService, PasswordEncoder passwordEncoder, GlobalAddressService globalAddressService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.refreshTokenService = refreshTokenService;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
+        this.globalAddressService = globalAddressService;
     }
 
     @PutMapping("/reset")
@@ -56,16 +59,26 @@ public class AuthController {
     public ResponseDto<Object> createCustomer(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest){
 
         if(userDetailsService.alreadyExist(userRegistrationRequest.getEmail())){
-           throw new InvalidOperationException("Email already in use, choose a different email.");
+            throw new InvalidOperationException("Email already in use, choose a different email.");
+
         }
         if(!userRegistrationRequest.isTermsChecked()){
            throw new InvalidOperationException("You must agree to terms and conditions.");
+
         }
 
+        // save user data
         AppUser newUser=
                 new AppUser(userRegistrationRequest.getFirstName(), userRegistrationRequest.getLastName(), userRegistrationRequest.getEmail(), userRegistrationRequest.getGender(),
-                        userRegistrationRequest.getDob(), passwordEncoder.encode(userRegistrationRequest.getPassword()), userRegistrationRequest.getLocation(),true);
+                        userRegistrationRequest.getDob(), passwordEncoder.encode(userRegistrationRequest.getPassword()), userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(), true);
+
         userDetailsService.add(newUser);
+
+        // save location data to global address
+        if(userRegistrationRequest.getCity()!=null || userRegistrationRequest.getCountry()!=null){
+            globalAddressService.addToAddress(userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(),userRegistrationRequest.getCountryCode(),
+                    userRegistrationRequest.getLatitude(),userRegistrationRequest.getLongitude());
+        }
         return ResponseDto.builder()
                 .message("User registered successfully.")
                 .httpStatus(HttpStatus.CREATED)

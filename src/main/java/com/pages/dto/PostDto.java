@@ -44,6 +44,8 @@ public class PostDto{
     private String mediaOrientation;
     private String height;
     private String profession;
+    private int compatibility;
+
 
 
 }

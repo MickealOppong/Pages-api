@@ -33,9 +33,13 @@ public class UserRegistrationRequest {
     @NotBlank(message = "Gender cannot be empty")
     private String gender;
 
-    @NotNull(message = "City cannot be null")
-    @NotBlank(message = "City cannot be empty")
-    private String location;
+    private String city;
+
+    private String country;
+
+    private Double latitude;
+    private Double longitude;
+    private String countryCode;
 
     @NotNull(message = "Date of birth cannot be null")
     @IsAdult

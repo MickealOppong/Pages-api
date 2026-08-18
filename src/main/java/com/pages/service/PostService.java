@@ -37,12 +37,14 @@ public class PostService {
     private final PostRepo postRepo;
     private final MediaService mediaService;
     private final AppUserDetailsService appUserDetailsService;
+    private final MatchEngineService matchEngineService;
 
 
-    public PostService(PostRepo postRepo, MediaService mediaService, AppUserDetailsService appUserDetailsService) {
+    public PostService(PostRepo postRepo, MediaService mediaService, AppUserDetailsService appUserDetailsService, MatchEngineService matchEngineService) {
         this.postRepo = postRepo;
         this.mediaService = mediaService;
         this.appUserDetailsService = appUserDetailsService;
+        this.matchEngineService = matchEngineService;
     }
 
 
@@ -302,7 +304,7 @@ public class PostService {
                         .orElse(null);
 
 
-
+              int score=  matchEngineService.evaluateFullCompatibility(userId,author.getId()).getCompatibilityScore();
 
                 PostDto postDto = PostDto.builder()
                         .postId(post.getPostId())
@@ -321,6 +323,7 @@ public class PostService {
                         .lookingFor(author.getLookingFor())
                         .height(author.getHeight())
                         .profession(author.getProfession())
+                        .compatibility(score)
                         .createdAt(post.getCreatedAt())
                         .modifiedAt(post.getModifiedAt())
                         .build();
