@@ -49,4 +49,8 @@ public class UserDetailsDto {
     private String planningStyle;
     private String socialEnergy;
     private String chronoType;
+
+
+
+
 }

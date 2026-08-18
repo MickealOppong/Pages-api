@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@ToString
 public class UserDetailsUpdateDto {
 
     private Long userId;
@@ -44,4 +46,8 @@ public class UserDetailsUpdateDto {
     private String planningStyle;
     private String socialEnergy;
     private String chronoType;
+
+    private Double lat;
+    private Double lon;
+    private String CountryCode;
 }

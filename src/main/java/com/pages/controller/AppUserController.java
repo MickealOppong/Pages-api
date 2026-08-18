@@ -48,8 +48,8 @@ public class AppUserController {
     }
 
     @PatchMapping(value = "/update-data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Boolean> updateUserData(@ModelAttribute UserDetailsUpdateDto userDetailsDto){
-         return ResponseEntity.ok(userDetailsService.updateUserDetails(userDetailsDto));
+    public ResponseDto<Object> updateUserData(@ModelAttribute UserDetailsUpdateDto userDetailsDto){
+        return  userDetailsService.updateUserDetails(userDetailsDto);
     }
 
 

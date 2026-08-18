@@ -44,6 +44,7 @@ public class AppUserDetailsService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final ChatMessageRepo chatMessageRepo;
     private final PostViewRepo postViewRepo;
+    private final GlobalAddressService globalAddressService;
 
 
     @Autowired
@@ -53,7 +54,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
 
     public AppUserDetailsService(AppUserRepo appUserRepo, AppUserRoleRepo appUserRoleRepo, MediaService mediaService,
-                                 PostRepo postRepo, Match_requestRepo matchRequestRepo, @Lazy PasswordEncoder  passwordEncoder, ChatMessageRepo chatMessageRepo, PostViewRepo postViewRepo){
+                                 PostRepo postRepo, Match_requestRepo matchRequestRepo, @Lazy PasswordEncoder  passwordEncoder, ChatMessageRepo chatMessageRepo, PostViewRepo postViewRepo, GlobalAddressService globalAddressService){
         this.appUserRepo = appUserRepo;
         this.appUserRoleRepo = appUserRoleRepo;
         this.mediaService = mediaService;
@@ -63,6 +64,7 @@ public class AppUserDetailsService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.chatMessageRepo = chatMessageRepo;
         this.postViewRepo = postViewRepo;
+        this.globalAddressService = globalAddressService;
     }
 
 
@@ -419,10 +421,12 @@ public class AppUserDetailsService implements UserDetailsService {
        return appUserRepo.findById(userId).orElseThrow(()->new UsernameNotFoundException(userId+" not found"));
     }
 
-    public boolean updateUserDetails(UserDetailsUpdateDto userDetailsDto){
+    public ResponseDto<Object> updateUserDetails(UserDetailsUpdateDto userDetailsDto){
+
 
         try{
            Optional<AppUser> retrievedUser= appUserRepo.findById(userDetailsDto.getUserId());
+
             if(retrievedUser.isPresent()){
                 AppUser appUser = retrievedUser.get();
 
@@ -491,17 +495,39 @@ public class AppUserDetailsService implements UserDetailsService {
                 if(userDetailsDto.getPlanningStyle()!=null){
                     appUser.setPlanningStyle(userDetailsDto.getPlanningStyle());
                 }
+                if(userDetailsDto.getCountry()!=null){
+                    appUser.setCountry(userDetailsDto.getCountry());
+                }
+
+                if(userDetailsDto.getCity()!=null){
+                    appUser.setCity(userDetailsDto.getCity());
+                }
 
                    updateLastActive(appUser.getId());
 
+
                 appUserRepo.save(appUser);
-                return true;
+
+                globalAddressService.updateAddress(userDetailsDto.getCity(), userDetailsDto.getCountry(), userDetailsDto.getLat(), userDetailsDto.getLon(),
+                        userDetailsDto.getCountryCode());
+                return ResponseDto.builder()
+                        .data(true)
+                        .httpStatus(HttpStatus.OK)
+                        .message("Updated")
+                        .build();
 
             }
-            return false;
+            return ResponseDto.builder()
+                    .data(false)
+                    .message("User not found")
+                    .build();
 
         }catch (Exception e){
-           return false;
+            return ResponseDto.builder()
+                    .data(false)
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message(e.getMessage())
+                    .build();
         }
     }
 

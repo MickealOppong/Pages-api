@@ -3,9 +3,7 @@ package com.pages.util;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
@@ -20,4 +18,14 @@ public class GlobalAddress {
     private String countryCode;
     private double latitude;
     private double longitude;
+
+    public GlobalAddress(){}
+    public GlobalAddress(Long id, String city, String country, String countryCode, double latitude, double longitude) {
+        this.id = id;
+        this.city = city;
+        this.country = country;
+        this.countryCode = countryCode;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }

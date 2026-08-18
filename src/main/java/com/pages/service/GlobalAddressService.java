@@ -23,4 +23,32 @@ public class GlobalAddressService {
                 .build();
         globalAddressRepo.save(globalAddress);
     }
+
+    public void updateAddress(String city,String country,Double lat,Double lon,String countryCode){
+       GlobalAddress globalAddress= globalAddressRepo.findByCity(city).orElse(null);
+       if(globalAddress ==null){
+            GlobalAddress newAddress = GlobalAddress.builder()
+                    .latitude(lat)
+                    .longitude(lon)
+                    .countryCode(countryCode)
+                    .city(city)
+                    .country(country)
+                    .build();
+            globalAddressRepo.save(newAddress);
+       }else{
+           if(country!=null){
+               globalAddress.setCountry(country);
+           }
+           if(countryCode!=null){
+               globalAddress.setCountryCode(countryCode);
+           }
+           if(lat!=null){
+               globalAddress.setLatitude(lat);
+           }
+           if(lon !=null){
+               globalAddress.setLongitude(lon);
+           }
+           globalAddressRepo.save(globalAddress);
+       }
+    }
 }

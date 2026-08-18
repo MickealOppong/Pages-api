@@ -11,4 +11,5 @@ import java.util.Set;
 public interface GlobalAddressRepo extends JpaRepository<GlobalAddress,Long> {
     Optional<GlobalAddress> findByCity(String city);
     Set<GlobalAddress> findByCountryCode(String countryCode);
+
 }
