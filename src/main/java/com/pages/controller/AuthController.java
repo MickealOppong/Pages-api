@@ -75,10 +75,11 @@ public class AuthController {
         userDetailsService.add(newUser);
 
         // save location data to global address
-        if(userRegistrationRequest.getCity()!=null || userRegistrationRequest.getCountry()!=null){
+        if(userRegistrationRequest.getCountry()!=null || userRegistrationRequest.getCity()!=null){
             globalAddressService.addToAddress(userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(),userRegistrationRequest.getCountryCode(),
                     userRegistrationRequest.getLatitude(),userRegistrationRequest.getLongitude());
         }
+
         return ResponseDto.builder()
                 .message("User registered successfully.")
                 .httpStatus(HttpStatus.CREATED)
