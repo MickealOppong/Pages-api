@@ -6,9 +6,9 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 @Builder
-@Getter
-@Setter
+@Data
 @Entity
+
 public class GlobalAddress {
 
     @Id @GeneratedValue

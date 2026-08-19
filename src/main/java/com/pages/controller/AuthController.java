@@ -70,15 +70,14 @@ public class AuthController {
         // save user data
         AppUser newUser=
                 new AppUser(userRegistrationRequest.getFirstName(), userRegistrationRequest.getLastName(), userRegistrationRequest.getEmail(), userRegistrationRequest.getGender(),
-                        userRegistrationRequest.getDob(), passwordEncoder.encode(userRegistrationRequest.getPassword()), userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(), true);
+                        userRegistrationRequest.getDob(), passwordEncoder.encode(userRegistrationRequest.getPassword()), userRegistrationRequest.getCity()
+                        , userRegistrationRequest.getCountry(), userRegistrationRequest.getCountryCode(), true);
 
         userDetailsService.add(newUser);
 
         // save location data to global address
-        if(userRegistrationRequest.getCountry()!=null || userRegistrationRequest.getCity()!=null){
-            globalAddressService.addToAddress(userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(),userRegistrationRequest.getCountryCode(),
-                    userRegistrationRequest.getLatitude(),userRegistrationRequest.getLongitude());
-        }
+        globalAddressService.addToAddress(userRegistrationRequest.getCity(), userRegistrationRequest.getCountry(),userRegistrationRequest.getCountryCode(),
+                userRegistrationRequest.getLatitude(),userRegistrationRequest.getLongitude());
 
         return ResponseDto.builder()
                 .message("User registered successfully.")

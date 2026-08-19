@@ -5,6 +5,7 @@ import com.pages.exception.EntityNotFoundException;
 import com.pages.model.AppUser;
 import com.pages.service.AppUserDetailsService;
 
+import com.pages.service.GlobalAddressService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -26,9 +28,11 @@ import java.security.Principal;
 public class AppUserController {
 
     private final AppUserDetailsService userDetailsService;
+    private final GlobalAddressService globalAddressService;
 
-    public AppUserController(AppUserDetailsService userDetailsService) {
+    public AppUserController(AppUserDetailsService userDetailsService, GlobalAddressService globalAddressService) {
         this.userDetailsService = userDetailsService;
+        this.globalAddressService = globalAddressService;
     }
 
     @GetMapping("/profile/{id}")
@@ -90,6 +94,9 @@ public class AppUserController {
          return userDetailsService.acceptRulesOnLogin(jwt);
         }
 
-
+    @GetMapping("/cities")
+    public Set<String> getCities(@AuthenticationPrincipal Jwt jwt) {
+        return globalAddressService.getAllCities(jwt);
+    }
 
 }

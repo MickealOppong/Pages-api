@@ -27,10 +27,7 @@ import org.springframework.transaction.annotation.RollbackOn;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -421,115 +418,89 @@ public class AppUserDetailsService implements UserDetailsService {
        return appUserRepo.findById(userId).orElseThrow(()->new UsernameNotFoundException(userId+" not found"));
     }
 
-    public ResponseDto<Object> updateUserDetails(UserDetailsUpdateDto userDetailsDto){
+    public ResponseDto<Object> updateUserDetails(UserDetailsUpdateDto userDetailsDto) {
+        try {
+            Optional<AppUser> retrievedUser = appUserRepo.findById(userDetailsDto.getUserId());
 
-
-        try{
-           Optional<AppUser> retrievedUser= appUserRepo.findById(userDetailsDto.getUserId());
-
-            if(retrievedUser.isPresent()){
+            if (retrievedUser.isPresent()) {
                 AppUser appUser = retrievedUser.get();
 
-
-                   if(userDetailsDto.getMedia()!=null){
-                       Media media = mediaService.saveMedia(userDetailsDto.getMedia());
-                       appUser.setMedia(media);
-                   }
-                   if(userDetailsDto.getGender()!=null){
-                       appUser.setGender(userDetailsDto.getGender());
-                   }
-                   if(userDetailsDto.getCountry()!=null){
-                       appUser.setCountry(userDetailsDto.getCountry());
-                   }
-                   if(userDetailsDto.getCity()!=null){
-                       appUser.setCity(userDetailsDto.getCity());
-                   }
-                   if(userDetailsDto.getAboutThem()!=null){
-                       appUser.setAboutThem(userDetailsDto.getAboutThem());
-                   }
-                   if(userDetailsDto.getAboutMe()!=null){
-                       appUser.setAboutMe(userDetailsDto.getAboutMe());
-                   }
-                   if(userDetailsDto.getPreference()!=null){
-                       appUser.setPreference(userDetailsDto.getPreference());
-                   }
-                   if(userDetailsDto.getEducation()!=null){
-                       appUser.setEducation(userDetailsDto.getEducation());
-                   }
-                   if(userDetailsDto.getLanguage()!=null){
-                       appUser.setLanguage(userDetailsDto.getLanguage());
-                   }
-                   if(userDetailsDto.getProfession()!=null){
-                       appUser.setProfession(userDetailsDto.getProfession());
-                   }
-
-                   if(userDetailsDto.getSmoking()!=null){
-                       appUser.setSmoking(userDetailsDto.getSmoking());
-                   }
-                if(userDetailsDto.getHeight()!=null){
-                    appUser.setHeight(userDetailsDto.getHeight());
+                // Media processing
+                if (userDetailsDto.getMedia() != null) {
+                    Media media = mediaService.saveMedia(userDetailsDto.getMedia());
+                    appUser.setMedia(media);
                 }
 
-                   if(userDetailsDto.getDrinking()!=null){
-                       appUser.setDrinking(userDetailsDto.getDrinking());
-                   }
+                // Standard profile mappings
+                if (userDetailsDto.getGender() != null) appUser.setGender(userDetailsDto.getGender());
+                if (userDetailsDto.getAboutThem() != null) appUser.setAboutThem(userDetailsDto.getAboutThem());
+                if (userDetailsDto.getAboutMe() != null) appUser.setAboutMe(userDetailsDto.getAboutMe());
+                if (userDetailsDto.getPreference() != null) appUser.setPreference(userDetailsDto.getPreference());
+                if (userDetailsDto.getEducation() != null) appUser.setEducation(userDetailsDto.getEducation());
+                if (userDetailsDto.getLanguage() != null) appUser.setLanguage(userDetailsDto.getLanguage());
+                if (userDetailsDto.getProfession() != null) appUser.setProfession(userDetailsDto.getProfession());
+                if (userDetailsDto.getSmoking() != null) appUser.setSmoking(userDetailsDto.getSmoking());
+                if (userDetailsDto.getHeight() != null) appUser.setHeight(userDetailsDto.getHeight());
+                if (userDetailsDto.getDrinking() != null) appUser.setDrinking(userDetailsDto.getDrinking());
+                if (userDetailsDto.getPets() != null) appUser.setPets(userDetailsDto.getPets());
+                if (userDetailsDto.getLookingFor() != null) appUser.setLookingFor(userDetailsDto.getLookingFor());
+                if (userDetailsDto.getChronoType() != null) appUser.setChronoType(userDetailsDto.getChronoType());
+                if (userDetailsDto.getSocialEnergy() != null) appUser.setSocialEnergy(userDetailsDto.getSocialEnergy());
+                if (userDetailsDto.getPlanningStyle() != null) appUser.setPlanningStyle(userDetailsDto.getPlanningStyle());
 
-                   if(userDetailsDto.getPets()!=null){
-                       appUser.setPets(userDetailsDto.getPets());
-                   }
-                   if(userDetailsDto.getLookingFor()!=null){
-                       appUser.setLookingFor(userDetailsDto.getLookingFor());
-                   }
-                   if(userDetailsDto.getDrinking()!=null){
-                       appUser.setDrinking(userDetailsDto.getDrinking());
-                   }
-
-                if(userDetailsDto.getChronoType()!=null){
-                    appUser.setChronoType(userDetailsDto.getChronoType());
+                // --- REFACTORED STRING & LOCATION SANITIZATION ---
+                if (userDetailsDto.getCountry() != null && !userDetailsDto.getCountry().isBlank()) {
+                    appUser.setCountry(userDetailsDto.getCountry().trim());
+                }
+                if (userDetailsDto.getCity() != null && !userDetailsDto.getCity().isBlank()) {
+                    appUser.setCity(userDetailsDto.getCity().trim());
+                }
+                if (userDetailsDto.getCountryCode() != null && !userDetailsDto.getCountryCode().isBlank()) {
+                    appUser.setCountryCode(userDetailsDto.getCountryCode().trim().toUpperCase());
                 }
 
-                if(userDetailsDto.getSocialEnergy()!=null){
-                    appUser.setSocialEnergy(userDetailsDto.getSocialEnergy());
-                }
-
-                if(userDetailsDto.getPlanningStyle()!=null){
-                    appUser.setPlanningStyle(userDetailsDto.getPlanningStyle());
-                }
-                if(userDetailsDto.getCountry()!=null){
-                    appUser.setCountry(userDetailsDto.getCountry());
-                }
-
-                if(userDetailsDto.getCity()!=null){
-                    appUser.setCity(userDetailsDto.getCity());
-                }
-
-                   updateLastActive(appUser.getId());
-
-
+                // Track last active date
+                updateLastActive(appUser.getId());
                 appUserRepo.save(appUser);
 
-                globalAddressService.updateAddress(userDetailsDto.getCity(), userDetailsDto.getCountry(), userDetailsDto.getLat(), userDetailsDto.getLon(),
-                        userDetailsDto.getCountryCode());
+                // --- SAFELY PASSED COORDINATE NULL FALLBACK CHECK ---
+                Double latitude = Objects.nonNull(userDetailsDto.getLat()) ? userDetailsDto.getLat() : 0.0;
+                Double longitude = Objects.nonNull(userDetailsDto.getLon()) ? userDetailsDto.getLon() : 0.0;
+
+                // Only fire address registry updates if valid spatial tracking parameters are passed
+                if (latitude != 0.0 && longitude != 0.0) {
+                    globalAddressService.updateAddress(
+                            appUser.getCity(),
+                            appUser.getCountry(),
+                            latitude,
+                            longitude,
+                            appUser.getCountryCode()
+                    );
+                }
+
                 return ResponseDto.builder()
                         .data(true)
                         .httpStatus(HttpStatus.OK)
                         .message("Updated")
                         .build();
-
             }
+
             return ResponseDto.builder()
                     .data(false)
+                    .httpStatus(HttpStatus.NOT_FOUND) // CHANGED: Clearer than empty default
                     .message("User not found")
                     .build();
 
-        }catch (Exception e){
+        } catch (Exception e) {
+            log.error("Failed executing user details payload update processing logic", e);
             return ResponseDto.builder()
                     .data(false)
-                    .httpStatus(HttpStatus.FORBIDDEN)
-                    .message(e.getMessage())
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR) // CHANGED: Forbidden implies auth denial, use 500 for exceptions
+                    .message("An error occurred while updating user details: " + e.getMessage())
                     .build();
         }
     }
+
 
     @Transactional
     public ResponseDto<Boolean> acceptRulesOnLogin(Jwt jwt){

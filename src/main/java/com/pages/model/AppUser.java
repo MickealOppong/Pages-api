@@ -53,6 +53,7 @@ public class AppUser extends LogEntity implements UserDetails {
 
     private String city;
     private String country;
+    private String countryCode;
     private String preference;
 
     @Builder.Default
@@ -123,7 +124,7 @@ public class AppUser extends LogEntity implements UserDetails {
 
 
 
-    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String city,String country,boolean isTermsChecked){
+    public AppUser(String firstName,String lastName,String username, String gender,LocalDate dob,String password,String city,String country,String countryCode,boolean isTermsChecked){
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -136,6 +137,7 @@ public class AppUser extends LogEntity implements UserDetails {
         this.lastActive = Instant.now();
         this.isTermsChecked = isTermsChecked;
         this.country = country;
+        this.countryCode = countryCode;
     }
 
 

@@ -9,7 +9,10 @@ import java.util.Set;
 
 @Repository
 public interface GlobalAddressRepo extends JpaRepository<GlobalAddress,Long> {
-    Optional<GlobalAddress> findByCity(String city);
+    Optional<GlobalAddress> findFirstByCity(String city);
     Set<GlobalAddress> findByCountryCode(String countryCode);
+    Set<GlobalAddress> findByCountry(String country);
+
+    Optional<GlobalAddress> findFirstByLatitudeBetweenAndLongitudeBetween(Double lat1,Double lon1,Double lat2,Double lon2);
 
 }
