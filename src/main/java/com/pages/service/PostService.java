@@ -244,17 +244,17 @@ public class PostService {
 */
                 // 4. City filter activation
                 if (city != null && !city.trim().isEmpty() && !city.equalsIgnoreCase("null")) {
-                    predicate = cb.and(predicate, cb.like(appUserJoin.get("city"), city.trim()));
+                    predicate = cb.and(predicate, cb.equal(appUserJoin.get("city"), city.trim()));
                 }
 
                 // 5. Activity type filter activation
                 if (activity != null && !activity.trim().isEmpty() && !activity.equalsIgnoreCase("null")) {
-                    predicate = cb.and(predicate, cb.like(root.get("type"), activity.trim()));
+                    predicate = cb.and(predicate, cb.equal(root.get("type"), activity.trim()));
                 }
 
                 // 5. Activity type filter activation
                 if (lookingFor != null && !lookingFor.trim().isEmpty() && !lookingFor.equalsIgnoreCase("null")) {
-                    predicate = cb.and(predicate, cb.like(appUserJoin.get("lookingFor"), lookingFor.trim()));
+                    predicate = cb.and(predicate, cb.equal(appUserJoin.get("lookingFor"), lookingFor.trim()));
                 }
 
 
@@ -265,14 +265,12 @@ public class PostService {
                     // A 20-year-old today must have been born on or BEFORE this target date
                     java.time.LocalDate maxBirthDate = today.minusYears(fromAge);
                     predicate = cb.and(predicate, cb.lessThanOrEqualTo(appUserJoin.get("dateOfBirth"), maxBirthDate));
-                   System.out.println("from");
                 }
 
                 if (toAge != null && toAge > 0) {
                     // A 30-year-old today must have been born on or AFTER this target date
                     java.time.LocalDate minBirthDate = today.minusYears(toAge + 1).plusDays(1);
                     predicate = cb.and(predicate, cb.greaterThanOrEqualTo(appUserJoin.get("dateOfBirth"), minBirthDate));
-                    System.out.println("to");
                 }
 
 
