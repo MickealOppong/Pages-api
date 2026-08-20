@@ -212,17 +212,19 @@ public class PostService {
 
     public ResponseDto<Object> getDiscovery(Long userId, String city,String lookingFor, String activity, Integer fromAge, Integer toAge, int page,String genderPreference ,int size) {
 
+        log.info("{}",fromAge+" "+toAge+" city: "+city+" look for: "+lookingFor+" gender: "+genderPreference+" act: "+activity);
         try{
             List<PostDto> dataToSend = new ArrayList<>();
 
 
             AppUser currentUser = appUserDetailsService.getAppUserById(userId);
-            String myGender = currentUser.getGender();
+            //String myGender = currentUser.getGender();
 
             // Explicitly define specifications using an optimized root join
             Specification<Post> spec = (root, query, cb) -> {
                 // 1. Force a single explicit JOIN to prevent dynamic cross join multiplication bugs
                 jakarta.persistence.criteria.Join<Post, AppUser> appUserJoin = root.join("appUser");
+
 
                 // 2. Base conditions
                 jakarta.persistence.criteria.Predicate predicate = cb.and(
@@ -235,46 +237,50 @@ public class PostService {
                 if (genderPreference != null && !genderPreference.trim().isEmpty() && !genderPreference.equalsIgnoreCase("null")) {
                     predicate = cb.and(predicate, cb.equal(appUserJoin.get("gender"), genderPreference.trim()));
                 }
-            /*
+/*
             if (myGender != null && !myGender.equalsIgnoreCase("BOTH")) {
                 predicate = cb.and(predicate, cb.equal(appUserJoin.get("preference"), myGender));
             }
-            */
+*/
                 // 4. City filter activation
                 if (city != null && !city.trim().isEmpty() && !city.equalsIgnoreCase("null")) {
-                    predicate = cb.and(predicate, cb.equal(appUserJoin.get("city"), city.trim()));
+                    predicate = cb.and(predicate, cb.like(appUserJoin.get("city"), city.trim()));
                 }
 
                 // 5. Activity type filter activation
                 if (activity != null && !activity.trim().isEmpty() && !activity.equalsIgnoreCase("null")) {
-                    predicate = cb.and(predicate, cb.equal(root.get("type"), activity.trim()));
+                    predicate = cb.and(predicate, cb.like(root.get("type"), activity.trim()));
                 }
 
                 // 5. Activity type filter activation
                 if (lookingFor != null && !lookingFor.trim().isEmpty() && !lookingFor.equalsIgnoreCase("null")) {
-                    predicate = cb.and(predicate, cb.equal(appUserJoin.get("lookingFor"), lookingFor.trim()));
+                    predicate = cb.and(predicate, cb.like(appUserJoin.get("lookingFor"), lookingFor.trim()));
                 }
 
-                // 7. Age bracket dynamic calculation activation
-                int currentYear = java.time.LocalDate.now().getYear();
+
+                // 7. Age bracket static date calculation activation (Ultra High-Performance Option)
+                java.time.LocalDate today = java.time.LocalDate.now();
+
                 if (fromAge != null && fromAge > 0) {
-                    jakarta.persistence.criteria.Expression<Integer> ageExpr = cb.diff(
-                            currentYear,
-                            cb.function("YEAR", Integer.class, appUserJoin.get("date_of_birth"))
-                    );
-                    predicate = cb.and(predicate, cb.greaterThanOrEqualTo(ageExpr, fromAge));
+                    // A 20-year-old today must have been born on or BEFORE this target date
+                    java.time.LocalDate maxBirthDate = today.minusYears(fromAge);
+                    predicate = cb.and(predicate, cb.lessThanOrEqualTo(appUserJoin.get("dateOfBirth"), maxBirthDate));
+                   System.out.println("from");
                 }
+
                 if (toAge != null && toAge > 0) {
-                    jakarta.persistence.criteria.Expression<Integer> ageExpr = cb.diff(
-                            currentYear,
-                            cb.function("YEAR", Integer.class, appUserJoin.get("date_of_birth"))
-                    );
-                    predicate = cb.and(predicate, cb.lessThanOrEqualTo(ageExpr, toAge));
+                    // A 30-year-old today must have been born on or AFTER this target date
+                    java.time.LocalDate minBirthDate = today.minusYears(toAge + 1).plusDays(1);
+                    predicate = cb.and(predicate, cb.greaterThanOrEqualTo(appUserJoin.get("dateOfBirth"), minBirthDate));
+                    System.out.println("to");
                 }
 
 
                 return predicate;
+
+
             };
+
 
             // 7. Combine with your existing subquery match exclusions from PostSpecs
             spec = spec.and(PostSpecs.excludeExistingMatches(userId));
@@ -286,6 +292,7 @@ public class PostService {
             Pageable pageable = PageRequest.of(page == 0 ? page : page - 1, size,sort);
             //data from database
             Page<Post> matchingPosts = postRepo.findAll(spec, pageable);
+
 
             // Mapping loop remains clean and optimized
             for (Post post : matchingPosts) {

@@ -54,7 +54,6 @@ public class TransactionController {
             // We pass a standard size constraint of 30 per page layout block directly to your service
             return postService.getDiscovery(userId, city, lookingFor, activity, fromAge, toAge, page, gender, 30);
         } catch (Exception e) {
-            log.info("{}", e.getMessage());
             return null;
         }
     }

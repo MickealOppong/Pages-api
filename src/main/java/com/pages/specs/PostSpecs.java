@@ -6,6 +6,7 @@ import com.pages.model.Post;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.relational.core.sql.In;
 
 public class PostSpecs {
 
@@ -56,9 +57,9 @@ public class PostSpecs {
     }
 
     // 6. Dynamic Filter: Enforce minimum and maximum age bracket boundaries
-    public static Specification<Post> isWithinAgeRange(Long fromAge, Long toAge) {
+    public static Specification<Post> isWithinAgeRange(Integer fromAge, Integer toAge) {
         return (root, query, cb) -> {
-            var dobExpression = root.get("appUser").get("date_of_birth");
+            var dobExpression = root.get("appUser").get("dateOfBirth");
 
             // Calculate age directly on the SQL database level (Current Year - Birth Year)
             var currentYear = cb.function("YEAR", Integer.class, cb.currentDate());
@@ -66,8 +67,13 @@ public class PostSpecs {
             var calculatedAge = cb.diff(currentYear, birthYear);
 
             // Returns SQL: age >= fromAge AND age <= toAge
-            return cb.between(calculatedAge.as(Long.class), fromAge, toAge);
+            return cb.between(calculatedAge.as(Integer.class), fromAge, toAge);
         };
+    }
+
+    // 4. Dynamic Filter: Match exact city
+    public static Specification<Post> isLookingFor(String lookingFor) {
+        return (root, query, cb) -> cb.equal(cb.lower(root.get("appUser").get("lookingFor")), lookingFor.trim().toLowerCase());
     }
 }
 
