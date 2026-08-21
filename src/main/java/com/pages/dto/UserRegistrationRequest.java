@@ -21,11 +21,11 @@ public class UserRegistrationRequest {
     @NotBlank(message = "Last name cannot be empty")
     private String lastName;
 
-    @NotNull(message = "Username/Email cannot be null")
-    @NotBlank(message = "Username/Email cannot be empty")
+    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be empty")
     @Pattern(
             regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$",
-            message = "Please provide a valid email address as your username"
+            message = "Please provide a valid email address"
     )
     private String email;
 
@@ -47,15 +47,13 @@ public class UserRegistrationRequest {
     private LocalDate dob;
 
 
-  @NotNull(message = "Password cannot be null")
+  @NotBlank(message = "Password cannot be null")
   @Size(min = 8, max = 32, message = "Password must be between 8 and 32 characters long")
   @Pattern(
           regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
           message = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
   )
     @ToString.Exclude
-    @NotBlank
-    @NotNull
     private String password;
 
     @NotNull(message = "You must provide a value for terms acceptance")

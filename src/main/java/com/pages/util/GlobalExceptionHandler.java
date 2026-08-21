@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidOperationException(InvalidOperationException ex) {
        InvalidOperationException error = new InvalidOperationException(ex.getMessage());
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("status", HttpStatus.CONFLICT); // 403 Forbidden or HttpStatus.BAD_REQUEST (400)
+        body.put("status", HttpStatus.CONFLICT);
         body.put("error",error.getMessage());
         body.put("message", "An error occurred");
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);

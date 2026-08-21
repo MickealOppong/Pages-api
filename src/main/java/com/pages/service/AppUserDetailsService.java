@@ -183,6 +183,7 @@ public class AppUserDetailsService implements UserDetailsService {
     }
 
     public boolean alreadyExist(String username){
+        log.info("{}",appUserRepo.findByUsername(username).orElse(null).getFirstName());
        return appUserRepo.findByUsername(username).isPresent();
     }
 

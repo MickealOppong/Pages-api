@@ -212,7 +212,6 @@ public class PostService {
 
     public ResponseDto<Object> getDiscovery(Long userId, String city,String lookingFor, String activity, Integer fromAge, Integer toAge, int page,String genderPreference ,int size) {
 
-        log.info("{}",fromAge+" "+toAge+" city: "+city+" look for: "+lookingFor+" gender: "+genderPreference+" act: "+activity);
         try{
             List<PostDto> dataToSend = new ArrayList<>();
 
